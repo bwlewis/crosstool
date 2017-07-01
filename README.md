@@ -41,9 +41,9 @@ panel2 = tags$div(class="fluid-row", list(tags$h3("an HTML SPAN element with loo
 x = bscols(panel, panel2, widths=c(3, 9))
 ```
 
+See the output here:
+https://bwlewis.github.io/uiwidgets/example.html
+
 ## Better Example
 
 ...
-
-See the output here:
-https://bwlewis.github.io/uiwidgets/example.html
