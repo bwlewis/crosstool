@@ -2,7 +2,8 @@
 
 Prototypes for basic user-interface control elements for crosstalk
 applications. These elements use crosstalk to mimic some of the basic UI
-widgets in shiny.
+widgets in shiny. This is either an abomination or a cheap trick, I
+can't decide which yet.
 
 See https://rstudio.github.io/crosstalk/ for details on crosstalk.
 
