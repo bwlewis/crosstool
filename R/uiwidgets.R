@@ -7,6 +7,7 @@
 #'        communication. Transceiver widgets are more like normal crosstalk widgets.
 #' @param html A valid HTML object string.
 #' @param value The HTML object's I/O field name, for instance 'value' for some 'input' HTML elements.
+#' @param crosstalk A crosstalk SharedData object. Currently only used for the crosstalk group.
 #' @param ... Additional arguments passed directly to the JavaScript code.
 #' @return An HTML widget object.
 #' @note Typical differences with standard crosstalk widgets
@@ -16,17 +17,16 @@
 #' }
 #' @export
 widget <- function(class=c("transmitter", "receiver", "transceiver"),
-                     html, value="value", ..., width=NULL, height=NULL)
+                     html, value="value", crosstalk, ..., width=NULL, height=NULL)
 {
   x <- c(innerHTML=html, value=value, list(...))
   x$crosstalk_key <- NULL
   x$crosstalk_group <- NULL
-  if (is.SharedData(x$crosstalk))
+  if (is.SharedData(crosstalk))
   {
-    x$crosstalk_key <- x$crosstalk$key()
-    x$crosstalk_group <- x$crosstalk$groupName()
+    x$crosstalk_key <- crosstalk$key()
+    x$crosstalk_group <- crosstalk$groupName()
   }
-  x$crosstalk <- NULL
 
   htmlwidgets::createWidget(
           name = class,

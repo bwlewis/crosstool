@@ -5,7 +5,7 @@
 \title{Create a generic HTML crosstalk user interface endpoint.}
 \usage{
 widget(class = c("transmitter", "receiver", "transceiver"), html,
-  value = "value", ..., width = NULL, height = NULL)
+  value = "value", crosstalk, ..., width = NULL, height = NULL)
 }
 \arguments{
 \item{class}{The transmitter and receiever widgets use limited uni-directional crosstalk
@@ -14,6 +14,8 @@ communication. Transceiver widgets are more like normal crosstalk widgets.}
 \item{html}{A valid HTML object string.}
 
 \item{value}{The HTML object's I/O field name, for instance 'value' for some 'input' HTML elements.}
+
+\item{crosstalk}{A crosstalk SharedData object. Currently only used for the crosstalk group.}
 
 \item{...}{Additional arguments passed directly to the JavaScript code.}
 }
