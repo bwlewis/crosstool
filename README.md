@@ -21,7 +21,7 @@ controls.
 
 This is a crude prototype!
 
-## Dumb Example
+## A Dumb Example
 
 ```{r}
 library(crosstalk)
@@ -36,9 +36,11 @@ slider = widget("transmitter", "<input type='range' min='0' max='9'/>", crosstal
 box = widget("receiver", "<input type='textarea' style='height:200px;font-size:14pt;'/>", crosstalk=s, height=400, width=400)
 span = widget("receiver", "<span style='font-size:14pt;'/>", value="innerText", crosstalk=s, width=200, indexed=index.set)
 
-panel = tags$div(class="fluid-row", list(tags$h3("HTML range slider"), slider, tags$h3("the raw slider values in a text box:"), box))
-panel2 = tags$div(class="fluid-row", list(tags$h3("an HTML SPAN element with looked up values from the slider:"), span))
-x = bscols(panel, panel2, widths=c(3, 9))
+p1 = tags$div(list(tags$h3("HTML range slider"), slider))
+p2 = tags$div(list(tags$h3("the raw slider values in a text box"), box))
+p3 = tags$div(list(tags$h3("an HTML SPAN element with looked up values from the slider:"), span))
+
+bscols(p1, p2, p3, widths=c(3,6,3))
 ```
 
 See the output here:
