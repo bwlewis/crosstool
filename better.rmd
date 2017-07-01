@@ -1,0 +1,44 @@
+# Continuous k-means, principal components, and connectivity analysis of genomic data
+
+blah blah
+
+## Example
+
+```{r}
+suppressMessages({
+library(threejs)
+library(uiwidgets)
+library(crosstalk)
+library(htmltools)})
+s = readRDS(gzcon(url("http://illposed.net/chr22_pca.rds")))
+n = nrow(s$u)
+x = tcrossprod(s$u[,1:6]) + tcrossprod(rep(1, n)) / n
+d = sqrt(diag(x))
+x = sweep(sweep(x, 1, STATS= d, FUN='/'), 2, STATS=d, FUN='/')
+k = kmeans(s$u[, 1:6], 5)$cluster + 1
+
+f = function(p)
+{
+  a = x
+  a[a < p] = 0
+  diag(a) = 0
+  a[a > 0] = 1
+  graph_from_adjacency_matrix(a, mode="undirected", diag=FALSE)
+}
+
+
+p = c(0.999, 0.99, 0.98, 0.97, 0.96, 0.95, 0.9, 0.85)
+g = Map(f, p)
+
+# all these layouts are expensive to compute!
+library(parallel)
+l = mcMap(function(x) layout_with_fr(x, dim=3, niter=20), g, mc.cores=detectCores())
+
+sd = SharedData$new(data.frame(1:n))
+label.set = paste(p)
+slider = widget("transmitter", sprintf("<input type='range' min='0' max='%d' value='0'/>", length(p) - 1), crosstalk=sd, width="100%", height=20)
+span = widget("receiver", "<span style='font-size:16pt;'>0.999</span>", value="innerText", crosstalk=sd, width="100%", indexed=label.set)
+t = graphjs(g, l, vertex.size=0.1, bg="black", vertex.color=k, main=as.list(p), defer=TRUE, edge.alpha=0.5, deferfps=10, crosstalk=sd, width="100%", height=900)
+panel = tags$div(list(tags$h3("Connectivity threshold"), slider, span, tags$br()))
+bscols(t, panel, widths=c(11, 1))
+```
