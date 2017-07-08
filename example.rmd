@@ -8,15 +8,21 @@ library(uiwidgets)
 library(htmltools)
 
 # only used right now to get a crosstalk group...
-s = SharedData$new(data.frame(key=paste(1:10)), key=~key)
+s = SharedData$new(data.frame(key=paste(2:11)), key=~key)
 
-slider = widget("transmitter", "<input type='range' min='1' max='10'/>", crosstalk=s, width=200)
+slider = widget(s, "transmitter", "<input type='range' min='2' max='11'/>", width=200)
 box = widget(s, "receiver", "<input type='textarea' style='height:200px;font-size:14pt;'/>", height=400, width=400)
-span = widget(s, "receiver", "<span style='font-size:14pt;'/>", value="innerText", width=200, data=letters[1:10])
+span = widget(s, "receiver", "<span style='font-size:14pt;'/>", value="innerText", width=200, lookup=letters[1:10])
+
+s2 = SharedData$new(data.frame(1:10))
+relay = widget(s, "transceiver", html="", value="innerHTML", lookup=list(1:2, 2:3, 3, 4, 5, 6:7, 7:8, 8:9, 9:10, 10), relay=s2)
+span2 = widget(s2, "receiver", "<span style='font-size:14pt;'/>", value="innerText")
 
 p1 = tags$div(list(tags$h3("HTML range slider"), slider))
 p2 = tags$div(list(tags$h3("the raw slider values in a text box"), box))
-p3 = tags$div(list(tags$h3("an HTML SPAN element with looked up values from the slider:"), span))
+p3 = tags$div(list(tags$h3("an HTML SPAN element with looked up values from the slider:") , span))
+p4 = tags$div(list(tags$h3("an HTML SPAN with transceiver values") , span2, relay))
 
-bscols(p1, p2, p3, widths=c(3,6,3))
+x = bscols(p1, p2, p3, p4, widths=c(3,3,3,3))
+print(x)
 ```
