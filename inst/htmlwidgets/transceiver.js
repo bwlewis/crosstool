@@ -33,8 +33,8 @@ HTMLWidgets.widget({
         ct_sel1.on("change", cf);
         if(x.init)
         {
-          if(x.lookup) cf({sender: null, value: x.lookup[0];});
-          else cf({sender: null, value: 0;});
+          if(x.lookup) cf({sender: null, value: x.lookup[0]});
+          else cf({sender: null, value: 0});
         }
       },
       resize: function(width, height) { }
