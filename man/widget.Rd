@@ -4,11 +4,11 @@
 \alias{widget}
 \title{Create a generic HTML crosstalk user interface endpoint.}
 \usage{
-widget(crosstalk, class = c("transmitter", "receiver", "transceiver"), html,
+widget(data, class = c("transmitter", "receiver", "transceiver"), html = "",
   value = "value", ..., width = NULL, height = NULL)
 }
 \arguments{
-\item{crosstalk}{A crosstalk SharedData object. Currently only used for the crosstalk group.}
+\item{data}{A crosstalk SharedData object. Currently only used for the crosstalk group.}
 
 \item{class}{The transmitter and receiever widgets use limited uni-directional crosstalk
 communication. Transceiver widgets are more like normal crosstalk widgets.}
@@ -37,15 +37,22 @@ Notable Features
 }
 \section{Receiver-specific notes}{
 
-Specify the optional \code{data=<vector>} argument to use indexed values in the
-specified \code{data} vector indexed by the crosstalk key.
+Specify the optional \code{lookup=<vector>} argument to use indexed values in the
+specified \code{lookup} vector indexed by the crosstalk key.
 }
 
 \section{Transmitter-specific notes}{
 
+Only raw HTML object values specified by the \code{value} argument are transmitted.
 }
 
 \section{Transceiver-specific notes}{
 
+Specify the optional \code{relay=<Shared data object>} to relay the message to another
+Crosstalk group. The transceiver acts like a recevier, but re-transmits its (optionally
+looked-up values) to a 2nd crosstalk group. If \code{relay} is not specified, then
+the 2nd group defaults to the crosstalk group in the \code{data} argument. This
+widget ignores the \code{value} and \code{html} arguments--it does not normally
+have a corresponding visual component.
 }
 

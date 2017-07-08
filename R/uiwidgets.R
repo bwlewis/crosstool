@@ -3,7 +3,7 @@
 #' Use \code{widget} to define generic HTML elements with limited
 #' crosstalk functionality. These elements can be used to control
 #' crosstalk-enabled applications.
-#' @param crosstalk A crosstalk SharedData object. Currently only used for the crosstalk group.
+#' @param data A crosstalk SharedData object. Currently only used for the crosstalk group.
 #' @param class The transmitter and receiever widgets use limited uni-directional crosstalk
 #'        communication. Transceiver widgets are more like normal crosstalk widgets.
 #' @param html A valid HTML object string.
@@ -16,25 +16,40 @@
 #' \item{Defaults to transmitting raw html object values (not indexed values from a shared data frame}
 #' \item{Mostly uses the shared crosstalk data frame for its group key}
 #' }
+#'
 #' @section Receiver-specific notes:
-#' Specify the optional \code{data=<vector>} argument to use indexed values in the
-#' specified \code{data} vector indexed by the crosstalk key.
+#' Specify the optional \code{lookup=<vector>} argument to use indexed values in the
+#' specified \code{lookup} vector indexed by the crosstalk key.
 #'
 #' @section Transmitter-specific notes:
+#' Only raw HTML object values specified by the \code{value} argument are transmitted.
 #'
 #' @section Transceiver-specific notes:
+#' Specify the optional \code{relay=<Shared data object>} to relay the message to another
+#' Crosstalk group. The transceiver acts like a recevier, but re-transmits its (optionally
+#' looked-up values) to a 2nd crosstalk group. If \code{relay} is not specified, then
+#' the 2nd group defaults to the crosstalk group in the \code{data} argument. This
+#' widget ignores the \code{value} and \code{html} arguments--it does not normally
+#' have a corresponding visual component.
 #'
 #' @export
-widget <- function(crosstalk, class=c("transmitter", "receiver", "transceiver"),
-                     html, value="value", ..., width=NULL, height=NULL)
+widget <- function(data, class=c("transmitter", "receiver", "transceiver"),
+                     html="", value="value", ..., width=NULL, height=NULL)
 {
   x <- c(innerHTML=html, value=value, list(...))
   x$crosstalk_key <- NULL
   x$crosstalk_group <- NULL
-  if (is.SharedData(crosstalk))
+  x$crosstalk_group2 <- NULL
+  if (is.SharedData(data))
   {
-    x$crosstalk_key <- crosstalk$key()
-    x$crosstalk_group <- crosstalk$groupName()
+    x$crosstalk_key <- data$key()
+    x$crosstalk_group <- data$groupName()
+    x$crosstalk_group2 <- data$groupName()
+  }
+  if("relay" %in% names(x))
+  {
+    x$crosstalk_group2 <- x$relay$groupName()
+    x$relay <- NULL
   }
 
   htmlwidgets::createWidget(

@@ -1,19 +1,18 @@
 HTMLWidgets.widget({
-  name: 'receiver',       // see also transmitter
+  name: 'transceiver',       // see also transmitter, receiver
   type: 'output',
 
   factory: function(el, width, height) {
-    var ct_sel = new crosstalk.SelectionHandle();
-    var ct_filter = new crosstalk.FilterHandle();
+    var ct_sel1 = new crosstalk.SelectionHandle();
+    var ct_sel2 = new crosstalk.SelectionHandle();
     return {
       renderValue: function(x) {
         if(x.crosstalk_group) { 
-          ct_sel.setGroup(x.crosstalk_group);
-          ct_filter.setGroup(x.crosstalk_group);
-        }
-        el.innerHTML = x.innerHTML;
-        ct_sel.on("change", function(e) {
-          if(e.sender === ct_sel) return;
+          ct_sel1.setGroup(x.crosstalk_group);
+          ct_sel2.setGroup(x.crosstalk_group2);
+        } else return;
+        ct_sel1.on("change", function(e) {
+          if(e.sender === ct_sel1) return;
           var val;
           if(Array.isArray(e.value)) {
             // the usual crosstalk selection array values
@@ -25,10 +24,10 @@ HTMLWidgets.widget({
             // non-standard selection object value (FIXME we should switch to using _extraInfo)
             if(x.lookup)
             {
-              val = x.lookup[x.crosstalk_key.indexOf(e.value.object)];
-            } else val = e.value.object;
+              val = [x.lookup[x.crosstalk_key.indexOf(e.value.object)]];
+            } else val = [e.value.object];
           }
-          el.children[0][x.value] = val;
+          ct_sel2.set(val);
         });
       },
       resize: function(width, height) { }
