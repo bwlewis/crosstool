@@ -8,12 +8,11 @@ library(uiwidgets)
 library(htmltools)
 
 # only used right now to get a crosstalk group...
-s = SharedData$new(data.frame(1:10))
+s = SharedData$new(data.frame(key=paste(1:10)), key=~key)
 
-index.set = state.name[1:10]
-slider = widget("transmitter", "<input type='range' min='0' max='9'/>", crosstalk=s, width=200)
-box = widget("receiver", "<input type='textarea' style='height:200px;font-size:14pt;'/>", crosstalk=s, height=400, width=400)
-span = widget("receiver", "<span style='font-size:14pt;'/>", value="innerText", crosstalk=s, width=200, indexed=index.set)
+slider = widget("transmitter", "<input type='range' min='1' max='10'/>", crosstalk=s, width=200)
+box = widget(s, "receiver", "<input type='textarea' style='height:200px;font-size:14pt;'/>", height=400, width=400)
+span = widget(s, "receiver", "<span style='font-size:14pt;'/>", value="innerText", width=200, data=letters[1:10])
 
 p1 = tags$div(list(tags$h3("HTML range slider"), slider))
 p2 = tags$div(list(tags$h3("the raw slider values in a text box"), box))
