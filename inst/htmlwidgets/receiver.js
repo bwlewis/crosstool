@@ -17,17 +17,18 @@ HTMLWidgets.widget({
           var val;
           if(Array.isArray(e.value)) {
             // the usual crosstalk selection array values
-            val = e.value;
+            if(x.data)
+            {
+              val = e.value.map(function(i) {return x.data[x.crosstalk_key.indexOf(i)];});
+            } else val = e.value;
           } else {
             // non-standard selection object value (FIXME we should switch to using _extraInfo)
-            val = e.value.object;
+            if(x.data)
+            {
+              val = x.data[x.crosstalk_key.indexOf(e.value.object)];
+            } else val = e.value.object;
           }
-          if(x.indexed) {
-            // Assume that 'val' is a single index
-            // TODO: consider linking this to the SharedData array
-            //       and extending to multiple indices
-            el.children[0][x.value] = x.indexed[val];
-          } else el.children[0][x.value] = val;
+          el.children[0][x.value] = val;
         });
       },
       resize: function(width, height) { }
