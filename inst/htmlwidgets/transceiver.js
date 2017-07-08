@@ -11,7 +11,7 @@ HTMLWidgets.widget({
           ct_sel1.setGroup(x.crosstalk_group);
           ct_sel2.setGroup(x.crosstalk_group2);
         } else return;
-        ct_sel1.on("change", function(e) {
+        var cf = function(e) {
           if(e.sender === ct_sel1) return;
           var val;
           if(Array.isArray(e.value)) {
@@ -29,7 +29,13 @@ HTMLWidgets.widget({
           }
           if(! Array.isArray(val)) val = [val];
           ct_sel2.set(val);
-        });
+        };
+        ct_sel1.on("change", cf);
+        if(x.init)
+        {
+          if(x.lookup) cf({sender: null, value: x.lookup[0];});
+          else cf({sender: null, value: 0;});
+        }
       },
       resize: function(width, height) { }
     };
