@@ -24,9 +24,10 @@ HTMLWidgets.widget({
             // non-standard selection object value (FIXME we should switch to using _extraInfo)
             if(x.lookup)
             {
-              val = [x.lookup[x.crosstalk_key.indexOf(e.value.object)]];
-            } else val = [e.value.object];
+              val = x.lookup[x.crosstalk_key.indexOf(e.value.object)];
+            } else val = e.value.object;
           }
+          if(! Array.isArray(val)) val = [val];
           ct_sel2.set(val);
         });
       },
