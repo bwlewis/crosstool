@@ -12,15 +12,13 @@ library(crosstalk)
 library(d3scatter)
 library(htmltools)})
 s = readRDS(gzcon(url("http://illposed.net/chr22_pca.rds")))
+pop = readRDS(gzcon(url("http://illposed.net/pop.rds")))
 n = nrow(s$u)
 x = tcrossprod(s$u[,1:4]) + tcrossprod(rep(1, n)) / n
 d = sqrt(diag(x))
 x = sweep(sweep(x, 1, STATS= d, FUN='/'), 2, STATS=d, FUN='/')
 set.seed(1)
 k = kmeans(s$u[, 1:4], 5, nstart=50)$cluster + 1
-
-sd3 = SharedData$new(data.frame(x=s$u[,2], y=s$u[,3], color=paste(k-1)))
-d3 = d3scatter(sd3, ~x, ~y, color=~color, width="100%")
 
 f = function(p)
 {
@@ -34,21 +32,42 @@ f = function(p)
 p = c(0.9999, 0.9995, 0.999, 0.995, 0.99, 0.98, 0.97, 0.96, 0.95, 0.9, 0.8)
 g = Map(f, p)
 
-# all these layouts are expensive to compute!
+# all these network layouts are expensive to compute!
 library(parallel)
-l = mcMap(function(x) layout_with_fr(x, dim=3, niter=20), g, mc.cores=detectCores())
+l = mcMap(function(x) layout_with_fr(x, dim=3, niter=50), g, mc.cores=detectCores())
 
 # a list of connected vertex ids for each graph
 cv = Map(function(x) unique(as.vector(get.edgelist(x, names=FALSE))), g)
 names(cv) = NULL
 
-sd = SharedData$new(data.frame(key=paste(0:(length(p) - 1)), stringsAsFActors=FALSE), key=~key)
-relay = widget(sd, "transceiver", lookup=cv, relay=sd3, width=0)
+sd = SharedData$new(data.frame(1:length(p)))
+sd1 = SharedData$new(data.frame(1:n))
+
+sd3 = SharedData$new(data.frame(x=s$u[,2], y=s$u[,3], color=paste(k-1)))
+d3 = d3scatter(sd3, ~x, ~y, color=~color, width="100%")
+
+# Relay the output of slider into the sd3 crosstalk group, supplying an array
+# of connected vertex ids corresponding to the threshold from cv:
+relay = widget(sd, "transceiver", relay=sd3, width=0, init=TRUE, lookup=cv)
+# Relay the slider values directly to the graph
+relay1 = widget(sd, "transceiver", relay=sd1, width=0, init=TRUE, type="object")
 
 label.set = paste(p)
-slider = widget(sd, "transmitter", sprintf("<input type='range' min='0' max='%d' value='0'/>", length(p) - 1), width="100%", height=20)
-span = widget(sd, "receiver", sprintf("<span style='font-size:16pt;'>%s</span>", p[1]), value="innerText", height=40, lookup=label.set)
-t = graphjs(g, l, vertex.size=0.1, bg="black", vertex.color=k, main=as.list(p), defer=TRUE, edge.alpha=0.5, deferfps=10, crosstalk=sd, width="100%", height=900)
-panel = tags$div(list(tags$h3("Connectivity threshold"), slider, span, tags$hr(), tags$h3("K-means(5) clusters"), tags$p("highlighted points correspond to connected vertices"), d3, relay))
+slider = widget(sd, "transmitter",
+                sprintf("<input type='range' min='0' max='%d' value='0'/>",
+                length(p) - 1), width="100%", height=20)
+span = widget(sd, "receiver",
+              sprintf("<span style='font-size:16pt;'>%s</span>", p[1]),
+              value="innerText", height=40, lookup=label.set, crosstalk_key=paste(0:(length(p) - 1)))
+span2 = widget(sd1, "receiver",
+               "<span style='font-size:16pt;'></span>",
+               value="innerText", height=40, lookup=pop, type="array", width="100%")
+t = graphjs(g, l, vertex.size=0.1, bg="black", vertex.color=k,
+            main=as.list(p), defer=TRUE, edge.alpha=0.5, deferfps=10,
+            crosstalk=sd1, width="100%", height=900, brush=TRUE)
+panel = tags$div(list(tags$h3("Connectivity threshold"), slider, span, tags$hr(),
+                 span2, tags$hr(), tags$h3("K-means(5) clusters"),
+                 tags$p("highlighted points correspond to connected vertices"), d3,
+                 relay, relay1))
 bscols(t, panel, widths=c(7, 5))
 ```
