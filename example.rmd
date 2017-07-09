@@ -23,6 +23,5 @@ p2 = tags$div(list(tags$h3("the raw slider values in a text box"), box))
 p3 = tags$div(list(tags$h3("an HTML SPAN element with looked up values from the slider:") , span))
 p4 = tags$div(list(tags$h3("an HTML SPAN with transceiver values") , span2, relay))
 
-x = bscols(p1, p2, p3, p4, widths=c(3,3,3,3))
-print(x)
+bscols(p1, p2, p3, p4, widths=c(3,3,3,3))
 ```
