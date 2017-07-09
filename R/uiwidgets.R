@@ -37,12 +37,9 @@ widget <- function(data, class=c("transmitter", "receiver", "transceiver"),
                      html="", value="value", ..., width=NULL, height=NULL)
 {
   x <- c(innerHTML=html, value=value, list(...))
-  x$crosstalk_key <- NULL
-  x$crosstalk_group <- NULL
-  x$crosstalk_group2 <- NULL
   if (is.SharedData(data))
   {
-    x$crosstalk_key <- data$key()
+    if(is.null(x$crosstalk_key)) x$crosstalk_key <- data$key()  # allow key override
     x$crosstalk_group <- data$groupName()
     x$crosstalk_group2 <- data$groupName()
   }
