@@ -1,22 +1,26 @@
 # uiwidgets: Generic HTML User Interface Widgets for Crosstalk
 
-A basic user-interface control widget for crosstalk applications.  The widget
-uses crosstalk to mimic some of the basic UI widgets in shiny. This is either
-an abomination or a cheap trick, or maybe both.
+A generic HTML control widget for crosstalk applications. Create widgets that
+send control information ("transmitter"), for example from sliders or other
+HTML elements. Or widgets that receive information from crosstalk apps
+("receiver"). Both of those applications use uni-directional communication
+unlike most other crosstalk widgets.  Or transceive and optionally transcode
+key information from one crosstalk group to another ("transceiver").
 
 See https://rstudio.github.io/crosstalk/ for details on crosstalk.
 
-This prototype defines two ridiculously barebones generic widget classes:
-transmitter and receiver. Unlike typical crosstalk widgets, these widgets are
-generally _uni-directional_, either transmitting or receiving data,
-respectively, on the crosstalk selection interface.
+This prototype defines three ridiculously barebones generic widget classes:
+transmitter, receiver, and transceiver. Unlike typical crosstalk widgets, these
+widgets are generally _uni-directional_, either transmitting or receiving data,
+respectively, on the crosstalk selection interface.  "Transceiver" widgets use
+two one-sided communication channels, one for each crosstalk group.
 
 The widget is intended as prototype for generic user-interface control
 elements, similar to the control widgets available in shiny. They can be used
 with other crosstalk-enabled widgets that can benefit from external
 user-interface controls.
 
-This is a crude prototype!
+This is a crude, wacky prototype!
 
 ## A Dumb Example
 
@@ -40,7 +44,7 @@ d3 = d3scatter(s2, x=~x, y=~y)
 p1 = tags$div(list(tags$h3("HTML range slider"), slider))
 p2 = tags$div(list(tags$h3("the raw slider values in a text box"), box))
 p3 = tags$div(list(tags$h3("an HTML SPAN element with looked up values from the slider:") , span))
-p4 = tags$div(list(tags$h3("an HTML SPAN with transceiver values") , span2, relay))
+p4 = tags$div(list(tags$h3("an HTML SPAN with transcoded transceiver values") , span2, relay))
 
 x = browsable(tags$div(list(d3, bscols(p1, p2, p3, p4, widths=c(3,3,3,3)))))
 print(x)
