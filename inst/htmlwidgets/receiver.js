@@ -23,6 +23,7 @@ HTMLWidgets.widget({
             } else val = e.value;
           } else {
             // non-standard selection object value (FIXME we should switch to using _extraInfo)
+            if(x.type && x.type != "object") return;
             if(x.lookup)
             {
               val = x.lookup[x.crosstalk_key.indexOf(e.value.object)];

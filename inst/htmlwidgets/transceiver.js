@@ -48,8 +48,8 @@ HTMLWidgets.widget({
             else cf({sender: null, value: {object: 0}});
           } else
           {
-            if(x.lookup) cf({sender: null, value: x.lookup[0]});
-            else cf({sender: null, value: 0});
+            if(x.lookup) cf({sender: null, value: [x.lookup[0]]});
+            else cf({sender: null, value: [0]});
           }
         }
       },
