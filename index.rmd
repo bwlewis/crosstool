@@ -1,3 +1,5 @@
+# Crosstool Examples
+
 # Using 'receiver' to debug crosstalk key state
 
 Eavesdrop on widget chatter.
@@ -54,16 +56,21 @@ bscols(d1, d2, rx, tx, widths=c(4,4,4,0))
 This example includes two crosstalk groups connected by a transceiver relay.
 The transceiver converts keys across groups through a lookup vector.
 
+
 <ul>
 <li>The first group contains an HTML slider element with ten entries, a select
-option menu and an HTML span element. The select option is not useful here,
-but only used to illustrate another HTML control element.
+option menu and an HTML span element.
 <li>The 2nd group includes a d3scatter plot and a span element that displays
 the selected elements in its group.
-<li>The transceiver listens for selection changes in the first group, transcodes
-the selection value using a vector 'lookup' into a new vector of selection
-indices in the 2nd group, then sends that selection to the 2nd group.
+<li>The 'relay' transceiver listens for selection changes in the first group, transcodes
+the selection value using a vector 'lookup' indexed by the 's' crosstalk key
+into a new vector of selection
+indices in the 2nd group, then sends that new selection to the 2nd group.
 </ul>
+
+The slider and select elements are single-channel transceivers
+(receive/transmit on the same channel), and approximate traditional crosstalk
+widget behavior in this example.
 
 ```{r}
 library(crosstalk)
@@ -73,21 +80,21 @@ library(d3scatter)
 
 s = SharedData$new(data.frame(key=paste(2:11)), key=~key)
 
-slider = crosstool(s, "transmitter", "<input type='range' min='2' max='11', value='2'/>", width=200, init="2")
-sel =  sprintf("<select>%s</select>", paste(Map(function(i) sprintf("<option value='%d'>%d</option>", i, i), 2:11), collapse=""))
-opt = crosstool(s, "receiver", sel, value="value", height=100, width=200)
-span = crosstool(s, "receiver", "<span style='font-size:14pt;'/>", value="innerText", width=200, lookup=letters[1:10])
+slider = crosstool(s, "transceiver", "<input type='range' min='2' max='11', value='2'/>", width=200, init="2")
+h =  sprintf("<select>%s</select>", paste(Map(function(i) sprintf("<option value='%d'>%d</option>", i, i), 2:11), collapse=""))
+sel = crosstool(s, "transceiver", html=h, value="value", height=100, width=100)
+span = crosstool(s, "receiver", "<span style='font-size:14pt;'/>", value="innerText", width=200)
 
 s2 = SharedData$new(data.frame(x=rnorm(100), y=rnorm(100)))
 lookup = Map(function(i) sample(100, i), sample(100, 10))
-relay = crosstool(s, "transceiver", html="", value="innerHTML", lookup=lookup, relay=s2)
+relay = crosstool(s, "transceiver", lookup=lookup, relay=s2)
 span2 = crosstool(s2, "receiver", "<span style='font-size:14pt; word-wrap:break-word;'/>", value="innerText", width=200)
 d3 = d3scatter(s2, x=~x, y=~y)
 
-p1 = tags$div(list(tags$h3("view-only select"), opt))
-p2 = tags$div(list(tags$h3("an HTML SPAN element with looked up values from the slider:") , span))
-p3 = tags$div(list(tags$h3("an HTML SPAN with transcoded transceiver values") , span2, relay))
+p1 = tags$div(list(tags$h3("select"), sel))
+p2 = tags$div(list(tags$h3("span showing raw slider/select values:") , span))
+p3 = tags$div(list(tags$h3("span showing transcoded transceiver values") , span2, relay))
 p4 = tags$div(list(tags$h3("HTML range slider"), slider))
 
-browsable(tags$div(list(d3, bscols(p1, p2, p3, p4, widths=c(3,3,3,3)))))
+browsable(tags$div(list(d3, bscols(p1, p2, p3, p4, widths=c(1,3,3,3)))))
 ```

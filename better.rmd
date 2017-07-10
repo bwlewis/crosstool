@@ -48,18 +48,18 @@ d3 = d3scatter(sd3, ~x, ~y, color=~color, width="100%")
 
 # Relay the output of slider into the sd3 crosstalk group, supplying an array
 # of connected vertex ids corresponding to the threshold from cv:
-relay = widget(sd, "transceiver", relay=sd3, width=0, init=TRUE, lookup=cv)
+relay = crosstool(sd, "transceiver", relay=sd3, width=0, init=TRUE, lookup=cv)
 # Relay the slider values directly to the graph
-relay1 = widget(sd, "transceiver", relay=sd1, width=0, init=TRUE, type="object")
+relay1 = crosstool(sd, "transceiver", relay=sd1, width=0, init=TRUE, type="object")
 
 label.set = paste(p)
-slider = widget(sd, "transmitter",
+slider = crosstool(sd, "transmitter",
                 sprintf("<input type='range' min='0' max='%d' value='0'/>",
-                length(p) - 1), width="100%", height=20)
-span = widget(sd, "receiver",
+                length(p) - 1), width="100%", height=20, type="object")
+span = crosstool(sd, "receiver",
               sprintf("<span style='font-size:16pt;'>%s</span>", p[1]),
               value="innerText", height=40, lookup=label.set, crosstalk_key=paste(0:(length(p) - 1)))
-span2 = widget(sd1, "receiver",
+span2 = crosstool(sd1, "receiver",
                "<span style='font-size:16pt;'></span>",
                value="innerText", height=40, lookup=pop, type="array", width="100%")
 t = graphjs(g, l, vertex.size=0.1, bg="black", vertex.color=k,
