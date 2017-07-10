@@ -14,23 +14,13 @@ HTMLWidgets.widget({
         el.innerHTML = x.innerHTML;
         if(el.children && el.children.length > 0) {
           el.children[0].addEventListener("change", function() {
-            if(x.type && x.type == "object") {
-              // non-standard selection object value (FIXME switch to use _extraInfo)
-              ct_sel.set({object: el.children[0][x.value]});
-            } else {
-              var val = el.children[0][x.value];
-              if(!Array.isArray(val)) val = [val];
-              val = [].concat.apply([], val); // flatten in case element returns more than one array?
-              ct_sel.set(val);
-            }
+            var val = el.children[0][x.value];
+            if(!Array.isArray(val)) val = [val];
+            val = [].concat.apply([], val); // flatten in case element returns more than one array?
+            ct_sel.set(val);
           });
         }
         if(x.init) {
-          if(x.type && x.type == "object") {
-            if(x.lookup) ct_sel.set({object: x.lookup[x.init]});
-            else ct_sel.set({object: x.init});
-            return;
-          }
           var val;
           if(Array.isArray(x.init)) {
             if(x.lookup) val = x.init.map(function(i) {return x.lookup[x.crosstalk_key.indexOf(i)];});

@@ -15,20 +15,10 @@ HTMLWidgets.widget({
         ct_sel.on("change", function(e) {
           if(e.sender === ct_sel) return;
           var val;
-          if(Array.isArray(e.value)) {
-            // the usual crosstalk selection array values
-            if(x.lookup)
-            {
-              val = [].concat.apply([], e.value.map(function(i) {return x.lookup[x.crosstalk_key.indexOf(i)];}));
-            } else val = e.value;
-          } else {
-            // non-standard selection object value (FIXME switch to use _extraInfo)
-            if(x.type && x.type != "object") return;
-            if(x.lookup)
-            {
-              val = x.lookup[x.crosstalk_key.indexOf(e.value.object)];
-            } else val = e.value.object;
-          }
+          if(Array.isArray(e.value) && x.lookup) {
+              val = e.value.map(function(i) {return x.lookup[x.crosstalk_key.indexOf(i)];});
+          } else val = e.value;
+          if(Array.isArray(val) && val.length > 0 && Array.isArray(val[0])) val = [].concat.apply([], val);
           if(el.children && el.children.length > 0) el.children[0][x.value] = val;
         });
       },
