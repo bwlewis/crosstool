@@ -10,8 +10,13 @@ HTMLWidgets.widget({
           if(x.channel == "filter") {
             antenna.channel_1 = new crosstalk.FilterHandle();
             antenna.channel_2 = new crosstalk.FilterHandle();
-          }
-          else {
+          } else if(x.channel == "filter->select") {
+            antenna.channel_1 = new crosstalk.FilterHandle();
+            antenna.channel_2 = new crosstalk.SelectionHandle();
+          } else if(x.channel == "select->filter") {
+            antenna.channel_1 = new crosstalk.SelectionHandle();
+            antenna.channel_2 = new crosstalk.FilterHandle();
+          } else {
             antenna.channel_1 = new crosstalk.SelectionHandle();
             antenna.channel_2 = new crosstalk.SelectionHandle();
           }
