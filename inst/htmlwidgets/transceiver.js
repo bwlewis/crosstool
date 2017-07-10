@@ -27,8 +27,7 @@ HTMLWidgets.widget({
         var cf = function(e) {
           if(e.sender === antenna.channel_1 || e.sender === antenna.channel_2) return;
           if(x.alldone) return;
-          if(x.reset && e.sender)
-          {
+          if(x.reset && e.sender) {
             antenna.channel_2.set(x.reset);
             x.alldone = true;
             return;
@@ -54,18 +53,7 @@ HTMLWidgets.widget({
             antenna.channel_2.set(val); // send HTML element values
           });
         }
-        if(x.init) {
-          var val;
-          if(Array.isArray(x.init)) {
-            if(x.lookup) val = x.init.map(function(i) {return x.lookup[x.crosstalk_key.indexOf(i)];});
-            else val = x.init;
-          } else {
-            if(x.lookup) val = [x.lookup[x.crosstalk_key.indexOf(x.init)]];
-            else val = [x.init];
-          }
-          antenna.channel_2.set(val);
-          cf({sender: null, value: val});
-        }
+        if(x.init) cf({sender: null, value: [x.init]});
       },
       resize: function(width, height) { }
     };
