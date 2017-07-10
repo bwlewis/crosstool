@@ -70,9 +70,10 @@ into a new vector of selection
 indices in the 2nd group, then sends that new selection to the 2nd group.
 </ul>
 
-The slider and select elements are single-channel transceivers
-(receive/transmit on the same channel), and approximate traditional crosstalk
-widget behavior in this example.
+The slider and select elements are single-group transceivers (receive/transmit
+to the same crosstalk group but only on the Select Handle),  but otherwise
+approximate traditional crosstalk widget behavior.
+
 
 ```{r}
 library(crosstalk)
