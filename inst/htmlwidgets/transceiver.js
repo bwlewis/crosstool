@@ -20,7 +20,13 @@ HTMLWidgets.widget({
         } else return;
         el.innerHTML = x.innerHTML;
         var cf = function(e) {
-          if(e.sender === antenna.channel_1) return;
+          if(e.sender === antenna.channel_1 || e.sender === antenna.channel_2) return;
+          if(x.reset && e.sender)
+          {
+            antenna.channel_2.set(x.reset);
+            x.reset = false;
+            return;
+          }
           var val;
           if(Array.isArray(e.value)) {
             // the usual crosstalk selection array values
@@ -39,7 +45,7 @@ HTMLWidgets.widget({
             var val = el.children[0][x.value];
             if(!Array.isArray(val)) val = [val];
             if(Array.isArray(val[0])) val = [].concat.apply([], val); // flatten
-            antenna.channel_2.set(val);
+            antenna.channel_2.set(val); // send HTML element values
           });
         }
         if(x.init) {

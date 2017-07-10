@@ -15,7 +15,7 @@
 #' @return An HTML widget object.
 #' @note
 #' Crosstool behaves differently than many other crosstalk widgets. They generally
-#' communicate uni-directionally and on a single crosstalk channel (Filter, Select)
+#' communicate uni-directionally and only on a single crosstalk channel (Filter, Select)
 #' at a time to other widgets, optionally receiving from and
 #' sending to different crosstalk groups. They may transmit raw HTML element
 #' values, say from sliders or drop-down menus. They can transcode crosstalk
