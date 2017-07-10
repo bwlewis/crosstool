@@ -1,4 +1,49 @@
+# Using 'receiver' to debug crosstalk key state
 
+Eavesdrop on widget chatter.
+
+```{r}
+library(crosstalk)
+library(crosstool)
+library(htmltools)
+library(d3scatter) # devtools::install_github("jcheng5/d3scatter")
+
+x = iris[sample(150, 50), ]
+rownames(x) = NULL
+x$key = state.name
+sd = SharedData$new(x, key=~key)
+d1 = d3scatter(sd, x=~Petal.Length, y=~Petal.Width, color=~Species, width="100%")
+d2 = d3scatter(sd, x=~Sepal.Length, y=~Sepal.Width, color=~Species, width="100%")
+
+rx = crosstool(sd, "receiver",  html="<span style='font-size:14pt;'/>", value="innerText", width="200")
+bscols(d1, d2, rx, widths=c(4,4,4))
+```
+
+# Using 'transmitter' to set initial selection state for a crosstalk group
+
+This is one way to address the discussion in https://github.com/rstudio/crosstalk/issues/16.
+
+```{r}
+library(crosstalk)
+library(crosstool)
+library(htmltools)
+library(d3scatter)
+
+x = iris[sample(150, 50), ]
+rownames(x) = NULL
+x$key = state.name
+sd = SharedData$new(x, key=~key)
+d1 = d3scatter(sd, x=~Petal.Length, y=~Petal.Width, color=~Species, width="100%")
+d2 = d3scatter(sd, x=~Sepal.Length, y=~Sepal.Width, color=~Species, width="100%")
+
+rx = crosstool(sd, "receiver",  html="<span style='font-size:14pt;'/>", value="innerText", width="200")
+
+# Make an initial random selection and use the 'init' option
+i = sample(state.name, 10)
+tx = crosstool(sd, "transmitter", init=i)
+
+bscols(d1, d2, rx, tx, widths=c(4,4,4,0))
+```
 
 
 
@@ -10,17 +55,18 @@
 library(crosstalk)
 library(htmltools)
 library(crosstool)
-library(d3scatter) # devtools::install_github("jcheng5/d3scatter")
+library(d3scatter)
 
 s = SharedData$new(data.frame(key=paste(2:11)), key=~key)
 
-slider = widget(s, "transmitter", "<input type='range' min='2' max='11'/>", width=200)
-box = widget(s, "receiver", "<input type='textarea' style='height:200px;font-size:14pt;'/>", height=400, width=400)
-span = widget(s, "receiver", "<span style='font-size:14pt;'/>", value="innerText", width=200, lookup=letters[1:10])
+slider = crosstool(s, "transmitter", "<input type='range' min='2' max='11'/>", width=200)
+box = crosstool(s, "receiver", "<input type='textarea' style='height:200px;font-size:14pt;'/>", height=400, width=400)
+span = crosstool(s, "receiver", "<span style='font-size:14pt;'/>", value="innerText", width=200, lookup=letters[1:10])
 
-s2 = SharedData$new(data.frame(x=rnorm(5), y=rnorm(5)))
-relay = widget(s, "transceiver", html="", value="innerHTML", lookup=list(1:2, 2:5, 2, 3, 1:5, 4:5, 1, 2, 3, 4), relay=s2)
-span2 = widget(s2, "receiver", "<span style='font-size:14pt;'/>", value="innerText")
+s2 = SharedData$new(data.frame(x=rnorm(100), y=rnorm(100)))
+lookup = Map(function(i) sample(100, i), sample(100, 10))
+relay = crosstool(s, "transceiver", html="", value="innerHTML", lookup=lookup, relay=s2)
+span2 = crosstool(s2, "receiver", "<span style='font-size:14pt;'/>", value="innerText")
 d3 = d3scatter(s2, x=~x, y=~y)
 
 p1 = tags$div(list(tags$h3("HTML range slider"), slider))
