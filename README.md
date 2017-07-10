@@ -1,11 +1,11 @@
-# uiwidgets: Generic HTML User Interface Widgets for Crosstalk
+# Crosstool: A Generic Control Widget for Crosstalk
 
-A generic HTML control widget for crosstalk applications. Create widgets that
-send control information ("transmitter"), for example from sliders or other
-HTML elements. Or widgets that receive information from crosstalk apps
-("receiver"). Both of those applications use uni-directional communication
-unlike most other crosstalk widgets.  Or transceive and optionally transcode
-key information from one crosstalk group to another ("transceiver").
+Create widgets that send control information ("transmitter"), for example from
+sliders or other HTML elements. Or widgets that receive information from
+crosstalk apps ("receiver"). Both of those applications use uni-directional
+communication unlike most other crosstalk widgets.  Or transceive and
+optionally transcode key information from one crosstalk group to another
+("transceiver").
 
 See https://rstudio.github.io/crosstalk/ for details on crosstalk.
 
@@ -26,7 +26,7 @@ This is a crude, wacky prototype!
 
 ```{r}
 library(crosstalk)
-library(uiwidgets)
+library(crosstool)
 library(htmltools)
 library(d3scatter)
 
@@ -51,7 +51,7 @@ print(x)
 ```
 
 See the output here:
-https://bwlewis.github.io/uiwidgets/example.html
+https://bwlewis.github.io/crosstool/example.html
 
 ## Better Example
 
