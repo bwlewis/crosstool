@@ -1,5 +1,7 @@
 # Crosstool Examples
 
+The GitHub repository is here: https://github.com/bwlewis/crosstool.
+
 # Using 'receiver' to debug crosstalk key state
 
 Eavesdrop on widget chatter.
