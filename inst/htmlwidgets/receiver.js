@@ -3,17 +3,17 @@ HTMLWidgets.widget({
   type: 'output',
 
   factory: function(el, width, height) {
-    var ct_sel = new crosstalk.SelectionHandle();
-    var ct_filter = new crosstalk.FilterHandle();
+    var antenna = {channel: null};
     return {
       renderValue: function(x) {
         if(x.crosstalk_group) { 
-          ct_sel.setGroup(x.crosstalk_group);
-          ct_filter.setGroup(x.crosstalk_group);
+          if(x.channel == "filter") antenna.channel = new crosstalk.FilterHandle();
+          else antenna.channel = new crosstalk.SelectionHandle();
+          antenna.channel.setGroup(x.crosstalk_group);
         }
         el.innerHTML = x.innerHTML;
-        ct_sel.on("change", function(e) {
-          if(e.sender === ct_sel) return;
+        antenna.channel.on("change", function(e) {
+          if(e.sender === antenna.channel) return;
           var val;
           if(Array.isArray(e.value) && x.lookup) {
               val = e.value.map(function(i) {return x.lookup[x.crosstalk_key.indexOf(i)];});

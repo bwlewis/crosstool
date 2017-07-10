@@ -15,17 +15,19 @@
 #' @return An HTML widget object.
 #' @note
 #' Crosstool behaves differently than many other crosstalk widgets. They generally
-#' communicate uni-directionally to other widgets, optionally receiving from and
+#' communicate uni-directionally and on a single crosstalk channel (Filter, Select)
+#' at a time to other widgets, optionally receiving from and
 #' sending to different crosstalk groups. They may transmit raw HTML element
 #' values, say from sliders or drop-down menus. They can transcode crosstalk
 #' keys through optional lookup vectors.
-#'
-#' Crosstool widgets currently only use the crosstalk selection interface.
 #'
 #' @section Receiver-specific options:
 #' \itemize{
 #'   \item{lookup} optional vector; when specified use values from this vector as
 #'      indexed by the crosstalk key.
+#'   \item{channel} set to "filter" to use the crosstalk filter handle
+#' (https://rstudio.github.io/crosstalk/filter.html), defaults to the crosstalk
+#' selection handle (https://rstudio.github.io/crosstalk/selection.html).
 #' }
 #'
 #' @section Transmitter-specific options:
@@ -34,6 +36,9 @@
 #'      indexed by the crosstalk key.
 #'   \item{init} optional scalar or vector; when specified broadcast this value
 #'      to the crosstalk group upon initialization.
+#'   \item{channel} set to "filter" to use the crosstalk filter handle
+#' (https://rstudio.github.io/crosstalk/filter.html), defaults to the crosstalk
+#' selection handle (https://rstudio.github.io/crosstalk/selection.html).
 #' }
 #' Note that the HTML object values specified by the \code{value} argument are transmitted.
 #'
@@ -47,6 +52,9 @@
 #'    \code{data} group, optionally transcoding them through the \code{lookup}
 #'    vector. If \code{relay} is not specified then the 2nd group defaults to
 #'    the \code{data} crosstalk group.
+#'   \item{channel} set to "filter" to use the crosstalk filter handle
+#' (https://rstudio.github.io/crosstalk/filter.html), defaults to the crosstalk
+#' selection handle (https://rstudio.github.io/crosstalk/selection.html).
 #' }
 #'
 #' @examples
