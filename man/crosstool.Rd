@@ -72,9 +72,6 @@ Note that the HTML object values specified by the \code{value} argument are tran
    vector. If \code{relay} is not specified then the 2nd group defaults to
    the \code{data} crosstalk group.
 }
-This
-widget ignores the \code{value} and \code{html} arguments--it does not normally
-have a corresponding visual html component.
 }
 \examples{
 \dontrun{
@@ -105,6 +102,7 @@ d2 = d3scatter(sd, x=~Sepal.Length, y=~Sepal.Width, color=~Species, width="100\%
 
 rx = crosstool(sd, "receiver",  html="<span style='font-size:14pt;'/>", value="innerText", width="100\%")
 
+Make an initial random selection and use the 'init' option
 i = sample(state.name, 10)
 tx = crosstool(sd, "transmitter", init=i)
 bscols(d1, d2, rx, tx, widths=c(4,4,4,0))

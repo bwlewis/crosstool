@@ -19,7 +19,7 @@ HTMLWidgets.widget({
             // the usual crosstalk selection array values
             if(x.lookup)
             {
-              val = e.value.map(function(i) {return x.lookup[x.crosstalk_key.indexOf(i)];});
+              val = [].concat.apply([], e.value.map(function(i) {return x.lookup[x.crosstalk_key.indexOf(i)];}));
             } else val = e.value;
           } else {
             // non-standard selection object value (FIXME switch to use _extraInfo)
@@ -29,7 +29,7 @@ HTMLWidgets.widget({
               val = x.lookup[x.crosstalk_key.indexOf(e.value.object)];
             } else val = e.value.object;
           }
-          el.children[0][x.value] = val;
+          if(el.children && el.children.length > 0) el.children[0][x.value] = val;
         });
       },
       resize: function(width, height) { }

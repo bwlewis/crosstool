@@ -3,18 +3,20 @@
 Create widgets that send control information, for example from sliders or other
 HTML elements ("transmitters"). Or make widgets that receive information from
 crosstalk apps ("receivers"). Transmitters and receivers use one-sided
-communication unlike most other crosstalk widgets.  Or transceive and
-optionally transcode key information from one crosstalk group to another
-("transceiver").
+communication unlike most other crosstalk widgets.  Use "transceivers" 
+to communicate selections across one or two crosstalk groups and
+optionally transcode key information from one crosstalk group to another.
 
 See https://rstudio.github.io/crosstalk/ for details on crosstalk.
 
-This prototype defines three ridiculously barebones generic widget classes:
-transmitter, receiver, and transceiver. Unlike typical crosstalk widgets, these
-widgets are generally _uni-directional_, either transmitting or receiving data,
-respectively, on a crosstalk _selection_ interface.  "Transceiver" widgets use
-two one-sided communication channels, one for each crosstalk group (receiving
-on one group and transmitting to the other).
+See https://bwlewis.github.io/crosstool/ for crosstool examples.
+
+The crosstool package defines three almost ridiculously barebones generic
+widget classes: transmitter, receiver, and transceiver. Unlike typical
+crosstalk widgets, these widgets are generally _uni-directional_, either
+transmitting or receiving data on a crosstalk _selection_ interface.
+"Transceiver" widgets use two one-sided communication channels, either on the
+same crosstalk group or across two crosstalk groups.
 
 The widget is intended as low-level prototype for generic user-interface
 control elements, similar to the control widgets available in shiny. They can

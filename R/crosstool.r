@@ -48,9 +48,6 @@
 #'    vector. If \code{relay} is not specified then the 2nd group defaults to
 #'    the \code{data} crosstalk group.
 #' }
-#' This
-#' widget ignores the \code{value} and \code{html} arguments--it does not normally
-#' have a corresponding visual html component.
 #'
 #' @examples
 #' \dontrun{
@@ -81,7 +78,7 @@
 #'
 #' rx = crosstool(sd, "receiver",  html="<span style='font-size:14pt;'/>", value="innerText", width="100%")
 #'
-# Make an initial random selection and use the 'init' option
+#' Make an initial random selection and use the 'init' option
 #' i = sample(state.name, 10)
 #' tx = crosstool(sd, "transmitter", init=i)
 #' bscols(d1, d2, rx, tx, widths=c(4,4,4,0))
@@ -92,6 +89,7 @@ crosstool <- function(data, class=c("transmitter", "receiver", "transceiver"),
                      html="", value="value", ..., width=NULL, height=NULL)
 {
   x <- c(innerHTML=html, value=value, list(...))
+  class <- match.arg(class)
   if (is.SharedData(data))
   {
     if (is.null(x$crosstalk_key)) x$crosstalk_key <- data$key()  # allow key override
@@ -100,6 +98,7 @@ crosstool <- function(data, class=c("transmitter", "receiver", "transceiver"),
   }
   if ("relay" %in% names(x))
   {
+    if (! is.SharedData(x$relay)) stop("'relay' must refer to a SharedData object")
     x$crosstalk_group2 <- x$relay$groupName()
     x$relay <- NULL
   }

@@ -11,6 +11,7 @@ HTMLWidgets.widget({
           ct_sel1.setGroup(x.crosstalk_group);
           ct_sel2.setGroup(x.crosstalk_group2);
         } else return;
+        el.innerHTML = x.innerHTML;
         var cf = function(e) {
           if(e.sender === ct_sel1) return;
           var val;
@@ -20,9 +21,9 @@ HTMLWidgets.widget({
               val = e.value.map(function(i) {return x.lookup[x.crosstalk_key.indexOf(i)];});
             } else val = e.value;
             if(! Array.isArray(val)) val = [val];
-            val = [].concat.apply([], val); // flatten in case lookup returns more than one array?
+              if(Array.isArray(val[0])) val = [].concat.apply([], val); // flatten
           } else {
-            // non-standard selection object value (FIXME we should switch to using _extraInfo)
+            // non-standard selection object value (FIXME switch to use _extraInfo)
             if(x.type && x.type == "object") {
               if(x.lookup) {
                 val = {object: x.lookup[x.crosstalk_key.indexOf(e.value.object)]};
@@ -34,9 +35,23 @@ HTMLWidgets.widget({
               if(! Array.isArray(val)) val = [val];
             }
           }
+          if(el.children && el.children.length > 0) el.children[0][x.value] = val;
           ct_sel2.set(val);
         };
         ct_sel1.on("change", cf);
+        if(el.children && el.children.length > 0) {
+          el.children[0].addEventListener("change", function() {
+            if(x.type && x.type == "object") {
+              // non-standard selection object value (FIXME switch to use _extraInfo)
+              ct_sel2.set({object: el.children[0][x.value]});
+            } else {
+              var val = el.children[0][x.value];
+              if(!Array.isArray(val)) val = [val];
+              if(Array.isArray(val[0])) val = [].concat.apply([], val); // flatten
+              ct_sel2.set(val);
+            }
+          });
+        }
         if(x.init) {
           if(x.type && x.type == "object") {
             if(x.lookup) cf({sender: null, value: {object: x.lookup[x.init]}});
