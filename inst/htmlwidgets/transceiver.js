@@ -20,6 +20,7 @@ HTMLWidgets.widget({
               val = e.value.map(function(i) {return x.lookup[x.crosstalk_key.indexOf(i)];});
             } else val = e.value;
             if(! Array.isArray(val)) val = [val];
+            val = [].concat.apply([], val); // flatten in case lookup returns more than one array?
           } else {
             // non-standard selection object value (FIXME we should switch to using _extraInfo)
             if(x.type && x.type == "object") {

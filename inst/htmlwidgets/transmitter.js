@@ -20,6 +20,7 @@ HTMLWidgets.widget({
             } else {
               var val = el.children[0][x.value];
               if(!Array.isArray(val)) val = [val];
+              val = [].concat.apply([], val); // flatten in case element returns more than one array?
               ct_sel.set(val);
             }
           });
