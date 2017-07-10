@@ -1,6 +1,19 @@
 # Continuous k-means, principal components, and connectivity analysis of genomic data
 
-blah blah
+blah blah math blah blah
+
+## Technical notes
+
+The threejs package responds to crosstalk selection handle events normally. But
+it uses the crosstalk filter handle in a non-standard way to control the graph
+animation sequence.  Use the slider in the visualization below to step through
+the indicated levels of network connectivity thresholds.
+
+
+## References
+
+- 1000 Genomes Project Consortium. "A global reference for human genetic variation." Nature 526.7571 (2015): 68-74.
+- Ding, Chris, and Xiaofeng He. "K-means clustering via principal component analysis." Proceedings of the twenty-first international conference on Machine learning. ACM, 2004.
 
 ## Example
 
@@ -30,7 +43,7 @@ f = function(p)
   graph_from_adjacency_matrix(a, mode="undirected", diag=FALSE)
 }
 
-p = c(0.9999, 0.9995, 0.999, 0.995, 0.99, 0.98, 0.97, 0.96, 0.95, 0.9, 0.8)
+p = c(0.9995, 0.999, 0.995, 0.99, 0.98, 0.97, 0.96, 0.95, 0.9, 0.85, 0.8)
 g = Map(f, p)
 
 # all these network layouts are expensive to compute!
@@ -47,19 +60,19 @@ sd1 = SharedData$new(data.frame(1:n))
 sd3 = SharedData$new(data.frame(x=s$u[,2], y=s$u[,3], color=paste(k-1)))
 d3 = d3scatter(sd3, ~x, ~y, color=~color, width="100%")
 
-# Relay the output of slider into the sd3 crosstalk group, supplying an array
-# of connected vertex ids corresponding to the threshold from cv:
-relay = crosstool(sd, "transceiver", relay=sd3, width=0, init=TRUE, lookup=cv)
+# Map the sd group filter to the sd3 crosstalk group selection by way of cv.
+# Crazy, right?
+relay = crosstool(sd, "transceiver", relay=sd3, width=0, init=TRUE, lookup=cv, channel="filter->select")
 # Relay the slider values directly to the graph
-relay1 = crosstool(sd, "transceiver", relay=sd1, width=0, init=TRUE, type="object")
+relay1 = crosstool(sd, "transceiver", relay=sd1, width=0, init=TRUE, type="object", channel="filter")
 
 label.set = paste(p)
 slider = crosstool(sd, "transmitter",
                 sprintf("<input type='range' min='0' max='%d' value='0'/>",
-                length(p) - 1), width="100%", height=20, type="object")
+                length(p) - 1), width="100%", height=20, channel="filter")
 span = crosstool(sd, "receiver",
               sprintf("<span style='font-size:16pt;'>%s</span>", p[1]),
-              value="innerText", height=40, lookup=label.set, crosstalk_key=paste(0:(length(p) - 1)))
+              value="innerText", height=40, lookup=label.set, crosstalk_key=paste(0:(length(p) - 1)), channel="filter")
 span2 = crosstool(sd1, "receiver",
                "<span style='font-size:16pt;'></span>",
                value="innerText", height=40, lookup=pop, type="array", width="100%")
