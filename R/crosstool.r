@@ -60,7 +60,7 @@
 #'
 #' x = iris[sample(150, 50), ]
 #' rownames(x) = NULL
-#' x$key = state.name 
+#' x$key = state.name
 #' sd = SharedData$new(x, key=~key)
 #' d1 = d3scatter(sd, x=~Petal.Length, y=~Petal.Width, color=~Species, width="100%")
 #' d2 = d3scatter(sd, x=~Sepal.Length, y=~Sepal.Width, color=~Species, width="100%")
@@ -92,11 +92,11 @@ crosstool <- function(data, class=c("transmitter", "receiver", "transceiver"),
   x <- c(innerHTML=html, value=value, list(...))
   if (is.SharedData(data))
   {
-    if(is.null(x$crosstalk_key)) x$crosstalk_key <- data$key()  # allow key override
+    if (is.null(x$crosstalk_key)) x$crosstalk_key <- data$key()  # allow key override
     x$crosstalk_group <- data$groupName()
     x$crosstalk_group2 <- data$groupName()
   }
-  if("relay" %in% names(x))
+  if ("relay" %in% names(x))
   {
     x$crosstalk_group2 <- x$relay$groupName()
     x$relay <- NULL

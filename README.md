@@ -71,5 +71,3 @@ tx = crosstool(sd, "transmitter", init=i)
 
 bscols(d1, d2, rx, tx, widths=c(4,4,4,0))
 ```
-
-
