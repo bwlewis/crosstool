@@ -34,7 +34,7 @@ multiple crosstalk groups.
 }
 \note{
 Crosstool behaves differently than many other crosstalk widgets. They generally
-communicate uni-directionally and on a single crosstalk channel (Filter, Select)
+communicate uni-directionally and only on a single crosstalk channel (Filter, Select)
 at a time to other widgets, optionally receiving from and
 sending to different crosstalk groups. They may transmit raw HTML element
 values, say from sliders or drop-down menus. They can transcode crosstalk
@@ -79,6 +79,10 @@ Note that the HTML object values specified by the \code{value} argument are tran
   \item{channel} set to "filter" to use the crosstalk filter handle
 (https://rstudio.github.io/crosstalk/filter.html), defaults to the crosstalk
 selection handle (https://rstudio.github.io/crosstalk/selection.html).
+ \item{reset} optional vector of crosstalk group keys; use with \code{init}
+ when \code{data == relay} (one crosstalk group) to reset the initial
+ filter/select handle. Only happens once--after resetting the transceiver will
+ no longer relay messages.
 }
 }
 \examples{

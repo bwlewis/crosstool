@@ -55,6 +55,10 @@
 #'   \item{channel} set to "filter" to use the crosstalk filter handle
 #' (https://rstudio.github.io/crosstalk/filter.html), defaults to the crosstalk
 #' selection handle (https://rstudio.github.io/crosstalk/selection.html).
+#'  \item{reset} optional vector of crosstalk group keys; use with \code{init}
+#'  when \code{data == relay} (one crosstalk group) to reset the initial
+#'  filter/select handle. Only happens once--after resetting the transceiver will
+#'  no longer relay messages.
 #' }
 #'
 #' @examples

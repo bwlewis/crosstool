@@ -21,10 +21,11 @@ HTMLWidgets.widget({
         el.innerHTML = x.innerHTML;
         var cf = function(e) {
           if(e.sender === antenna.channel_1 || e.sender === antenna.channel_2) return;
+          if(x.alldone) return;
           if(x.reset && e.sender)
           {
             antenna.channel_2.set(x.reset);
-            x.reset = false;
+            x.alldone = true;
             return;
           }
           var val;
@@ -37,7 +38,7 @@ HTMLWidgets.widget({
               if(Array.isArray(val[0])) val = [].concat.apply([], val); // flatten
           } else val = e.value;
           if(el.children && el.children.length > 0) el.children[0][x.value] = val;
-          antenna.channel_2.set(val);
+         antenna.channel_2.set(val);
         };
         antenna.channel_1.on("change", cf);
         if(el.children && el.children.length > 0) {
@@ -57,6 +58,7 @@ HTMLWidgets.widget({
             if(x.lookup) val = [x.lookup[x.crosstalk_key.indexOf(x.init)]];
             else val = [x.init];
           }
+          antenna.channel_2.set(val);
           cf({sender: null, value: val});
         }
       },
