@@ -15,8 +15,8 @@ sd = SharedData$new(x, key=~key)
 d1 = d3scatter(sd, x=~Petal.Length, y=~Petal.Width, color=~Species, width="100%")
 d2 = d3scatter(sd, x=~Sepal.Length, y=~Sepal.Width, color=~Species, width="100%")
 
-rx = crosstool(sd, "receiver",  html="<span style='font-size:14pt;'/>", value="innerText", width="200")
-bscols(d1, d2, rx, widths=c(4,4,4))
+rx = crosstool(sd, "receiver",  html="<span style='font-size:14pt;'/>", value="innerText", width="100%")
+bscols(d1, d2, rx, widths=c(5,5,2))
 ```
 
 # Using 'transmitter' to set initial selection state for a crosstalk group
@@ -36,7 +36,7 @@ sd = SharedData$new(x, key=~key)
 d1 = d3scatter(sd, x=~Petal.Length, y=~Petal.Width, color=~Species, width="100%")
 d2 = d3scatter(sd, x=~Sepal.Length, y=~Sepal.Width, color=~Species, width="100%")
 
-rx = crosstool(sd, "receiver",  html="<span style='font-size:14pt;'/>", value="innerText", width="200")
+rx = crosstool(sd, "receiver",  html="<span style='font-size:14pt;'/>", value="innerText", width=200)
 
 # Make an initial random selection and use the 'init' option
 i = sample(state.name, 10)
@@ -51,6 +51,18 @@ bscols(d1, d2, rx, tx, widths=c(4,4,4,0))
 
 ...of generic HTML widgets interacting using crosstalk and transcoding values.
 
+This example includes two crosstalk groups connected by a transceiver relay.
+
+<ul>
+<li>The first group contains an HTML slider element with ten entries, a text
+box and an HTML span element.
+<li>The 2nd group includes a d3scatter plot and a span element that displays
+the selected elements in its group.
+<li>The transceiver listens for selection changes in the first group, transcodes
+the selection value using a vector 'lookup' into a new vector of selection
+indices in the 2nd group, then sends that selection to the 2nd group.
+</ul>
+
 ```{r}
 library(crosstalk)
 library(htmltools)
@@ -60,13 +72,13 @@ library(d3scatter)
 s = SharedData$new(data.frame(key=paste(2:11)), key=~key)
 
 slider = crosstool(s, "transmitter", "<input type='range' min='2' max='11'/>", width=200)
-box = crosstool(s, "receiver", "<input type='textarea' style='height:200px;font-size:14pt;'/>", height=400, width=400)
+box = crosstool(s, "receiver", "<input type='textarea' style='height:200px;font-size:14pt;'/>", height=100, width=200)
 span = crosstool(s, "receiver", "<span style='font-size:14pt;'/>", value="innerText", width=200, lookup=letters[1:10])
 
 s2 = SharedData$new(data.frame(x=rnorm(100), y=rnorm(100)))
 lookup = Map(function(i) sample(100, i), sample(100, 10))
 relay = crosstool(s, "transceiver", html="", value="innerHTML", lookup=lookup, relay=s2)
-span2 = crosstool(s2, "receiver", "<span style='font-size:14pt;'/>", value="innerText")
+span2 = crosstool(s2, "receiver", "<span style='font-size:14pt;'/>", value="innerText", width=200)
 d3 = d3scatter(s2, x=~x, y=~y)
 
 p1 = tags$div(list(tags$h3("HTML range slider"), slider))
