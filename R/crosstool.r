@@ -1,6 +1,6 @@
 #' Create a generic HTML crosstalk user interface endpoint.
 #'
-#' Use \code{widget} to define generic HTML elements with limited
+#' Use \code{crosstool} to define generic HTML elements with limited
 #' crosstalk functionality. These elements can be used to control
 #' crosstalk-enabled applications.
 #' @param data A crosstalk SharedData object. Currently only used for the crosstalk group.
@@ -33,7 +33,7 @@
 #' have a corresponding visual component.
 #'
 #' @export
-widget <- function(data, class=c("transmitter", "receiver", "transceiver"),
+crosstool <- function(data, class=c("transmitter", "receiver", "transceiver"),
                      html="", value="value", ..., width=NULL, height=NULL)
 {
   x <- c(innerHTML=html, value=value, list(...))

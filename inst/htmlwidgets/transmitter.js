@@ -13,8 +13,11 @@ HTMLWidgets.widget({
         }
         el.innerHTML = x.innerHTML;
         el.children[0].addEventListener("change", function() {
-          // non-standard selection object value (FIXME we should switch to using _extraInfo)
-          ct_sel.set({object: el.children[0][x.value]});
+          if(x.type && x.type == "object")
+          {
+            // non-standard selection object value (FIXME we should switch to using _extraInfo)
+            ct_sel.set({object: el.children[0][x.value]});
+          } else ct_sel.set([el.children[0][x.value]]);
         });
       },
       resize: function(width, height) { }

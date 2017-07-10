@@ -46,8 +46,7 @@ HTMLWidgets.widget({
           {
             if(x.lookup) cf({sender: null, value: {object: x.lookup[0]}});
             else cf({sender: null, value: {object: 0}});
-          } else
-          {
+          } else {
             if(x.lookup) cf({sender: null, value: [x.lookup[0]]});
             else cf({sender: null, value: [0]});
           }

@@ -33,13 +33,13 @@ library(d3scatter)
 
 s = SharedData$new(data.frame(key=paste(2:11)), key=~key)
 
-slider = widget(s, "transmitter", "<input type='range' min='2' max='11'/>", width=200)
-box = widget(s, "receiver", "<input type='textarea' style='height:200px;font-size:14pt;'/>", height=400, width=400)
-span = widget(s, "receiver", "<span style='font-size:14pt;'/>", value="innerText", width=200, lookup=letters[1:10])
+slider = crosstool(s, "transmitter", "<input type='range' min='2' max='11'/>", width=200)
+box = crosstool(s, "receiver", "<input type='textarea' style='height:200px;font-size:14pt;'/>", height=400, width=400)
+span = crosstool(s, "receiver", "<span style='font-size:14pt;'/>", value="innerText", width=200, lookup=letters[1:10])
 
 s2 = SharedData$new(data.frame(x=rnorm(5), y=rnorm(5)))
-relay = widget(s, "transceiver", html="", value="innerHTML", lookup=list(1:2, 2:5, 2, 3, 1:5, 4:5, 1, 2, 3, 4), relay=s2)
-span2 = widget(s2, "receiver", "<span style='font-size:14pt;'/>", value="innerText")
+relay = crosstool(s, "transceiver", html="", value="innerHTML", lookup=list(1:2, 2:5, 2, 3, 1:5, 4:5, 1, 2, 3, 4), relay=s2)
+span2 = crosstool(s2, "receiver", "<span style='font-size:14pt;'/>", value="innerText")
 d3 = d3scatter(s2, x=~x, y=~y)
 
 p1 = tags$div(list(tags$h3("HTML range slider"), slider))
