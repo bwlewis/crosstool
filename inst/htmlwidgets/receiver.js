@@ -22,7 +22,7 @@ HTMLWidgets.widget({
               val = e.value.map(function(i) {return x.lookup[x.crosstalk_key.indexOf(i)];});
             } else val = e.value;
           } else {
-            // non-standard selection object value (FIXME we should switch to using _extraInfo)
+            // non-standard selection object value (FIXME switch to use _extraInfo)
             if(x.type && x.type != "object") return;
             if(x.lookup)
             {

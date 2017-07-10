@@ -15,5 +15,7 @@ Depends:
 Imports:
     htmlwidgets (>= 0.3.2),
     crosstalk
+Recommends:
+    htmltools
 Enhances: knitr, shiny
 RoxygenNote: 5.0.1

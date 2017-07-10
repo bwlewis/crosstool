@@ -23,7 +23,32 @@ user-interface controls.
 
 This is a crude, wacky prototype!
 
-## A Dumb Example
+# Examples
+
+## Using 'receiver' to debug crosstalk key state
+
+Eavesdrop on widget chatter.
+
+```{r}
+library(crosstalk)
+library(crosstool)
+library(htmltools)
+library(d3scatter) # devtools::install_github("jcheng5/d3scatter")
+
+x = iris[sample(150, 50), ]
+rownames(x) = NULL
+x$key = state.name
+sd = SharedData$new(x, key=~key)
+d1 = d3scatter(sd, x=~Petal.Length, y=~Petal.Width, color=~Species, width="100%")
+d2 = d3scatter(sd, x=~Sepal.Length, y=~Sepal.Width, color=~Species, width="100%")
+
+rx = crosstool(sd, "receiver",  html="<span style='font-size:14pt;'/>", value="innerText", width="100%")
+bscols(d1, d2, rx, widths=c(4,4,4))
+```
+
+## Using 'transmitter' to set initial selection state for a crosstalk group
+
+This is one way to address the discussion in https://github.com/rstudio/crosstalk/issues/16.
 
 ```{r}
 library(crosstalk)
@@ -31,28 +56,20 @@ library(crosstool)
 library(htmltools)
 library(d3scatter)
 
-s = SharedData$new(data.frame(key=paste(2:11)), key=~key)
+x = iris[sample(150, 50), ]
+rownames(x) = NULL
+x$key = state.name
+sd = SharedData$new(x, key=~key)
+d1 = d3scatter(sd, x=~Petal.Length, y=~Petal.Width, color=~Species, width="100%")
+d2 = d3scatter(sd, x=~Sepal.Length, y=~Sepal.Width, color=~Species, width="100%")
 
-slider = crosstool(s, "transmitter", "<input type='range' min='2' max='11'/>", width=200)
-box = crosstool(s, "receiver", "<input type='textarea' style='height:200px;font-size:14pt;'/>", height=400, width=400)
-span = crosstool(s, "receiver", "<span style='font-size:14pt;'/>", value="innerText", width=200, lookup=letters[1:10])
+rx = crosstool(sd, "receiver",  html="<span style='font-size:14pt;'/>", value="innerText", width="100%")
 
-s2 = SharedData$new(data.frame(x=rnorm(5), y=rnorm(5)))
-relay = crosstool(s, "transceiver", html="", value="innerHTML", lookup=list(1:2, 2:5, 2, 3, 1:5, 4:5, 1, 2, 3, 4), relay=s2)
-span2 = crosstool(s2, "receiver", "<span style='font-size:14pt;'/>", value="innerText")
-d3 = d3scatter(s2, x=~x, y=~y)
+# Make an initial random selection and use the 'init' option
+i = sample(state.name, 10)
+tx = crosstool(sd, "transmitter", init=i)
 
-p1 = tags$div(list(tags$h3("HTML range slider"), slider))
-p2 = tags$div(list(tags$h3("the raw slider values in a text box"), box))
-p3 = tags$div(list(tags$h3("an HTML SPAN element with looked up values from the slider:") , span))
-p4 = tags$div(list(tags$h3("an HTML SPAN with transcoded transceiver values") , span2, relay))
-
-browsable(tags$div(list(d3, bscols(p1, p2, p3, p4, widths=c(3,3,3,3)))))
+bscols(d1, d2, rx, tx, widths=c(4,4,4,0))
 ```
 
-See the output here:
-https://bwlewis.github.io/crosstool/example.html
 
-## Better Example
-
-...
