@@ -1,6 +1,10 @@
-# Basic Example
 
-of generic HTML widgets interacting using crosstalk.
+
+
+
+# Somewhat complicated example...
+
+...of generic HTML widgets interacting using crosstalk and transcoding values.
 
 ```{r}
 library(crosstalk)
