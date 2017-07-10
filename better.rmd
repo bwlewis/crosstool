@@ -7,7 +7,7 @@ blah blah
 ```{r}
 suppressMessages({
 library(threejs)
-library(uiwidgets)
+library(crosstool)
 library(crosstalk)
 library(d3scatter)
 library(htmltools)})

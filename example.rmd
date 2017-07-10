@@ -4,7 +4,7 @@ of generic HTML widgets interacting using crosstalk.
 
 ```{r}
 library(crosstalk)
-library(uiwidgets)
+library(crosstool)
 library(htmltools)
 
 # only used right now to get a crosstalk group...
