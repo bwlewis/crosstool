@@ -18,6 +18,10 @@ communication. Transceiver widgets are more like normal crosstalk widgets.}
 \item{value}{The HTML object's I/O field name, for instance 'value' for some 'input' HTML elements.}
 
 \item{...}{Additional arguments passed directly to the JavaScript code (see the notes).}
+
+\item{width}{Widget width.}
+
+\item{height}{Widget height.}
 }
 \value{
 An HTML widget object.
@@ -82,7 +86,7 @@ library(d3scatter) # devtools::install_github("jcheng5/d3scatter")
 
 x = iris[sample(150, 50), ]
 rownames(x) = NULL
-x$key = state.name 
+x$key = state.name
 sd = SharedData$new(x, key=~key)
 d1 = d3scatter(sd, x=~Petal.Length, y=~Petal.Width, color=~Species, width="100\%")
 d2 = d3scatter(sd, x=~Sepal.Length, y=~Sepal.Width, color=~Species, width="100\%")

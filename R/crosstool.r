@@ -10,6 +10,8 @@
 #' @param html A valid HTML element string.
 #' @param value The HTML object's I/O field name, for instance 'value' for some 'input' HTML elements.
 #' @param ... Additional arguments passed directly to the JavaScript code (see the notes).
+#' @param width Widget width.
+#' @param height Widget height.
 #' @return An HTML widget object.
 #' @note
 #' Crosstool behaves differently than many other crosstalk widgets. They generally
