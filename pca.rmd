@@ -1,21 +1,119 @@
 # Continuous k-means, principal components, and connectivity analysis of genomic data
 
-blah blah math blah blah
+This example illustrates some nice ideas from a lovely short 2004 paper by
+Chris Ding and Xiaofeng He<sup>5</sup>. Their paper illuminates connections
+between k-means clustering and principal components analysis (PCA).
 
-## Technical notes
+Ding and He strengthen and clarify previously known results and introduce a
+few new ideas, in particular:
 
-The threejs package responds to crosstalk selection handle events normally. But
-it uses the crosstalk filter handle in a non-standard way to control the graph
-animation sequence.  Use the slider in the visualization below to step through
-the indicated levels of network connectivity thresholds.
+- PCA can be viewed as continuous version of the discrete k-means classifier.
+- The optimal k-means solution exists in the projected  (k - 1)-dimensional
+  PCA subspace.
+- They introduce the idea of a connectivity coefficient between every pair of
+  points corresponding to a projected correlation-like value in the
+  PCA subspace.
+
+The 2nd idea above means that we can project high-dimensional problems into
+lower-dimensional ones and recover full-fidelity cluster information.  And
+thanks to algorithms like the IRLBA<sup>2</sup> and randomized SVD<sup>6</sup>
+introduced a few years after the Ding and He paper, we can compute
+low-dimensional PCA projections of high-dimensional problems very
+computationally efficiently.
+
+The last idea of the connectivity coefficient lets us think of clustering
+problems from different viewpoints using the tools of network analysis, which
+we explore a bit in the example below.
+
+Please note that these ideas say nothing about the computational complexity of
+k-means, a known NP-hard problem. The result simply says that we can conduct
+k-means in a lower dimensional subspace. However, if that subspace is small
+enough to, say, fit in memory, than many practical implementations of k-means
+benefit substantially (including parallel implementations).
+
+
+## Human genomic variation
+
+Genomic variant data is high-dimensional: Homo sapiens exhibits at least 81
+million identified genomic variants. The 1000 Genomes Project has collected
+full genome sequences for more than 2,504 individuals. That is, if we simply
+record that zero means an person does not contain a particular variant, and a
+one means that a person does contain the variant, then the 1000 Genomes Project
+variant data can be expressed as a 2,504-row by more than 81 million-column
+sparse matrix of zeros and ones. That's high dimensional!
+
+Say we want to group people together into similar clusters defined by their
+variant signatures. The 1000 Genomes Project lists 2,504 people. If every
+person was their own distinct group, that's only 2,504 groups. Similarly, the
+rank of the corresponding 0/1 variant data matrix is at most 2,504.  That means
+that most (nearly all) of those 81 million or so columns contain redundant
+information.
+
+If we suspect the number of groups to be small--let's say 5, then Ding and He
+show that we can project the very large-dimensional 81-million column matrix
+into a much more manageable one with only 4 columns or so. As long as that
+projection is cheap, this makes things a lot easier!
+
+## Putting things together into an example
+
+The example below shows a 2-d scatter plot of a principal components projection
+of the 1000 Genomes Project data for a single chromosome, number 22. That
+chromosome contains well over a million variants, so it's still a
+high-dimensional problem. We project the problem down to a four-dimensional one
+in this example (that is, a matrix with 2,504 rows and only four columns).
+
+But what I really like is Ding and He's idea about connectivity analysis.
+Their approach assigns a connectivity coefficient between 0 (not at all
+likely to be in the same group) and 1 (very likely to be in the same group)
+to each pair of observations, or _vertices_ in the network visualization
+below.
+
+
+The neat thing about this idea is that it lets us explore connected communities
+and how they evolve as we allow the connections to become weaker. The visualization
+below does just that.
+
+The visualization also plots networked communities using tools from network
+analysis instead of k-means, determined by an implementation of an algorithm
+by Blondel<sup>3</sup> in R's amazing igraph package<sup>4</sup>.
+
+It's notable that many (but certainly not all) network cluster/community
+analysis algorithms are cheap to compute, not NP-hard like k-means. And they
+solve different optimization problems than k-means usually focusing on
+connectivity.  Ding and He's connectivity coefficient is related to projected
+correlation, which itself is a kind of distance metric (for certain scaled
+problems, correlation is equivalent to a scaled Euclidean distance). It's not
+surprising then that vertices with very high connectivity coefficients tend to
+lie near the center of their respective k-means clusters, and you can see this
+in the example below.
+
+What I find fascinating about the last paragraph is that some cheap network
+community algorithms might produce excellent starting points for heuristic
+k-means implementations.
+
+I also love that, by explicitly illustrating connections between observations,
+the network visualization lets us see paths _between_ clusters. Sure, this is
+kind of analogous points in the scatter plot lying in-between two cluster
+centers, but it's easier to see in the network visualization.
+
+And of course we can bring other powerful tools form network theory to the
+party like measures of centrality, communicability, and so on. Many of
+those ideas use the same computational machinery from this example.
 
 
 ## References
 
-- 1000 Genomes Project Consortium. "A global reference for human genetic variation." Nature 526.7571 (2015): 68-74.
-- Ding, Chris, and Xiaofeng He. "K-means clustering via principal component analysis." Proceedings of the twenty-first international conference on Machine learning. ACM, 2004.
+1. 1000 Genomes Project Consortium. "A global reference for human genetic variation." Nature 526.7571 (2015): 68-74.
+2. Baglama, James, and Lothar Reichel. "Augmented implicitly restarted Lanczos bidiagonalization methods." SIAM Journal on Scientific Computing 27.1 (2005): 19-42.
+3. Blondel, Vincent D., et al. "Fast unfolding of communities in large networks." Journal of statistical mechanics: theory and experiment 2008.10 (2008): P10008.
+4. Csardi, Gabor, and Tamas Nepusz. "The igraph software package for complex network research." InterJournal, Complex Systems 1695.5 (2006): 1-9.
+5. Ding, Chris, and Xiaofeng He. "K-means clustering via principal component analysis." Proceedings of the twenty-first international conference on Machine learning. ACM, 2004.
+6. Halko, Nathan, Per-Gunnar Martinsson, and Joel A. Tropp. "Finding structure with randomness: Stochastic algorithms for constructing approximate matrix decompositions." (2009).
 
-## Example
+## The example
+
+Click on a vertex in the network visualization to identify it. Adjust the slider
+to change the network connectivity coefficent.
 
 ```{r}
 suppressMessages({
@@ -24,9 +122,9 @@ library(crosstool)
 library(crosstalk)
 library(d3scatter)
 library(htmltools)})
-options("shiny.json.digits" = 6)
 s = readRDS(gzcon(url("http://illposed.net/chr22_pca.rds")))
 pop = readRDS(gzcon(url("http://illposed.net/pop.rds")))
+
 n = nrow(s$u)
 x = tcrossprod(s$u[,1:4]) + tcrossprod(rep(1, n)) / n
 d = sqrt(diag(x))
@@ -43,45 +141,96 @@ f = function(p)
   graph_from_adjacency_matrix(a, mode="undirected", diag=FALSE)
 }
 
-p = c(0.9995, 0.999, 0.995, 0.99, 0.98, 0.97, 0.96, 0.95, 0.9, 0.85, 0.8)
+p = c(0.999, 0.995, 0.99, 0.97, 0.95, 0.925, 0.9, 0.85)
 g = Map(f, p)
 
-# all these network layouts are expensive to compute!
+# estimate network communities for each threshold value exclude communities
+# with less than 0.5% of the vertices, assiging all of those to their own group
+member = function(x)
+{
+  N = 0.005 * length(V(x))
+  x = membership(cluster_louvain(x))
+  t = table(x)
+  small = as.integer(names(t)[t < N])
+  if(length(small) < 1) return(x + 1) # no small groups, don't use group 1
+  n = small[1]
+  x[x %in% small] = n
+  # now re-label to make the small/unassigned group group 1
+  u = unique(x)
+  as.integer(factor(x, levels=c(n, u[u != n])))
+}
+m = Map(member, g)
+
+maxm = Reduce(max, Map(max, m))
+colors = c("#eeeeee", "#e31a1c", "#6a3d9a", "#33a02c", "#1f78b4", "#fdbf6f", "#ff7f00", "#b2df8a", "#fb9a99", "#a6cee3", "#cab2d6", "#ffff99", "#b15928")
+if(maxm > 1) colors = c(colors, rainbow(maxm - 1, alpha=NULL, start=0.2, end=0.5))
+# set the network vertex group colors
+for(j in 1:length(g)) V(g[[j]])$color = colors[m[[j]]]
+# make a brief report of the groups
+group_report = unlist(Map(function(x) {
+  u = unique(x)
+  s = sum(x == 1)
+  if(s == 1) return(sprintf("%d groups plus %d ungrouped vertex", length(u) - 1, s))
+  if(s > 1) return(sprintf("%d groups plus %d ungrouped vertices", length(u) - 1, s))
+  sprintf("%d groups", length(unique(x)))
+}, m))
+
+
+# compute force-directed network layouts for each threshold value
+# expensive to compute!
 library(parallel)
-l = mcMap(function(x) layout_with_fr(x, dim=3, niter=50), g, mc.cores=detectCores())
+l = mcMap(function(x) layout_with_fr(x, dim=3, niter=150), g, mc.cores=detectCores())
 
 # a list of connected vertex ids for each graph
 cv = Map(function(x) unique(as.vector(get.edgelist(x, names=FALSE))), g)
 names(cv) = NULL
 
-sd = SharedData$new(data.frame(1:length(p)))
-sd1 = SharedData$new(data.frame(1:n))
-
+sd1 = SharedData$new(data.frame(key=paste(seq(0, length(p) - 1))), key=~key)
+sd2 = SharedData$new(data.frame(1:n))
 sd3 = SharedData$new(data.frame(x=s$u[,2], y=s$u[,3], color=paste(k-1)))
-d3 = d3scatter(sd3, ~x, ~y, color=~color, width="100%")
 
 # Map the sd group filter to the sd3 crosstalk group selection by way of cv.
 # Crazy, right?
-relay = crosstool(sd, "transceiver", relay=sd3, width=0, init=TRUE, lookup=cv, channel="filter->select")
+relay1 = crosstool(sd1, "transceiver", relay=sd3, width=0, init="0", lookup=cv, channel="filter->select")
 # Relay the slider values directly to the graph
-relay1 = crosstool(sd, "transceiver", relay=sd1, width=0, init=TRUE, type="object", channel="filter")
+relay2 = crosstool(sd1, "transceiver", relay=sd2, width=0, channel="filter")
+# Relay graph selections to the d3 scatter plot
+relay3 = crosstool(sd2, "transceiver", relay=sd3, width=0)
 
-label.set = paste(p)
-slider = crosstool(sd, "transmitter",
+# d3 scatter plot
+d3 = d3scatter(sd3, ~x, ~y, color=~color, width="100%")
+
+label.set = paste(p, "    (", group_report, ")", sep="")
+slider = crosstool(sd1, "transmitter",
                 sprintf("<input type='range' min='0' max='%d' value='0'/>",
                 length(p) - 1), width="100%", height=20, channel="filter")
-span = crosstool(sd, "receiver",
+span1 = crosstool(sd1, "receiver",
               sprintf("<span style='font-size:16pt;'>%s</span>", p[1]),
-              value="innerText", height=40, lookup=label.set, crosstalk_key=paste(0:(length(p) - 1)), channel="filter")
-span2 = crosstool(sd1, "receiver",
-               "<span style='font-size:16pt;'></span>",
-               value="innerText", height=40, lookup=pop, type="array", width="100%")
-t = graphjs(g, l, vertex.size=0.1, bg="black", vertex.color=k,
+              value="innerText", height=40, lookup=label.set, channel="filter")
+span2 = crosstool(sd2, "receiver",
+               "<div style='font-size:16pt; height: 40px; max-height: 40px;'/>",
+               value="innerText", height=40, lookup=pop, width="100%")
+vis = graphjs(g, l, vertex.size=0.1, bg="black",
             main=as.list(p), defer=TRUE, edge.alpha=0.5, deferfps=10,
-            crosstalk=sd1, width="100%", height=900, brush=TRUE)
-panel = tags$div(list(tags$h3("Connectivity threshold"), slider, span, tags$hr(),
-                 span2, tags$hr(), tags$h3("K-means(5) clusters"),
-                 tags$p("highlighted points correspond to connected vertices"), d3,
-                 relay, relay1))
-bscols(t, panel, widths=c(7, 5))
+            crosstalk=sd2, width="100%", height=900, brush=TRUE)
+panel = list(tags$h3("Connectivity threshold"), slider, span1, tags$hr(),
+                 span2, tags$h3("K-means(5) clusters"),
+                 tags$p("Highlighted points correspond to connected vertices or to an interactive selection. Vertices with high connectivity are nearer the k-means centers."), d3,
+                 relay1, relay2, relay3)
+bscols(vis, panel, widths=c(7, 5))
 ```
+
+
+## Technical notes
+
+The threejs package responds to crosstalk selection handle events normally. But
+it uses the crosstalk filter handle in a non-standard way to control the graph
+animation sequence.  Use the slider in the visualization below to step through
+the indicated levels of network connectivity thresholds.
+
+We connected threejs vertex selection to the scatter plot to highlight selected
+vertices in both plots (helping to compare the PCA and network clusters).
+However, selection in the scatter plot is _not_ linked to the graph
+visualization for a technical reason: it's too slow (the scatter plot sends
+tons of updates to the network plot, and each one of those is computationally
+expensive to render).
