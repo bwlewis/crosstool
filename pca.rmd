@@ -1,11 +1,11 @@
-# Continuous k-means, principal components, and connectivity analysis of genomic data
+# K-means, principal components, and connectivity analysis of genomic data
 
 This example illustrates some nice ideas from a lovely short 2004 paper by
 Chris Ding and Xiaofeng He<sup>5</sup>. Their paper illuminates connections
 between k-means clustering and principal components analysis (PCA).
 
-Ding and He strengthen and clarify previously known results and introduce a
-few new ideas, in particular:
+Clarifying ealier results and introducing new ones, their paper shows in
+particular that:
 
 - PCA can be viewed as continuous version of the discrete k-means classifier.
 - The optimal k-means solution exists in the projected  (k - 1)-dimensional
@@ -15,18 +15,18 @@ few new ideas, in particular:
   PCA subspace.
 
 The 2nd idea above means that we can project high-dimensional problems into
-lower-dimensional ones and recover full-fidelity cluster information.  And
-thanks to algorithms like the IRLBA<sup>2</sup> and randomized SVD<sup>6</sup>
+lower-dimensional ones and recover full-fidelity cluster information.  Thanks
+to algorithms like the IRLBA<sup>2</sup> and randomized SVD<sup>7</sup>
 introduced a few years after the Ding and He paper, we can compute
 low-dimensional PCA projections of high-dimensional problems very
 computationally efficiently.
 
 The last idea of the connectivity coefficient lets us think of clustering
-problems from different viewpoints using the tools of network analysis, which
-we explore a bit in the example below.
+problems from different viewpoints using the tools of network analysis,
+explored a bit in the example below.
 
-Please note that these ideas say nothing about the computational complexity of
-k-means, a known NP-hard problem. The result simply says that we can conduct
+Note that these ideas say nothing about the computational complexity of k-means
+itself, a known NP-hard problem. The result simply says that we can conduct
 k-means in a lower dimensional subspace. However, if that subspace is small
 enough to, say, fit in memory, than many practical implementations of k-means
 benefit substantially (including parallel implementations).
@@ -35,12 +35,13 @@ benefit substantially (including parallel implementations).
 ## Human genomic variation
 
 Genomic variant data is high-dimensional: Homo sapiens exhibits at least 81
-million identified genomic variants. The 1000 Genomes Project has collected
-full genome sequences for more than 2,504 individuals. That is, if we simply
-record that zero means an person does not contain a particular variant, and a
-one means that a person does contain the variant, then the 1000 Genomes Project
-variant data can be expressed as a 2,504-row by more than 81 million-column
-sparse matrix of zeros and ones. That's high dimensional!
+million identified genomic variants. The 1000 Genomes Project<sup>1</sup> has
+collected full genome sequences for more than 2,504 people. That is, if we
+simply record that zero means an person does not contain a particular variant,
+and a one means that a person does contain the variant (ignoring other
+details), then the 1000 Genomes Project variant data can be expressed as a
+2,504-row by more than 81 million-column sparse matrix of zeros and ones.
+That's high dimensional!
 
 Say we want to group people together into similar clusters defined by their
 variant signatures. The 1000 Genomes Project lists 2,504 people. If every
@@ -62,16 +63,14 @@ chromosome contains well over a million variants, so it's still a
 high-dimensional problem. We project the problem down to a four-dimensional one
 in this example (that is, a matrix with 2,504 rows and only four columns).
 
-But what I really like is Ding and He's idea about connectivity analysis.
-Their approach assigns a connectivity coefficient between 0 (not at all
-likely to be in the same group) and 1 (very likely to be in the same group)
-to each pair of observations, or _vertices_ in the network visualization
-below.
-
+What I really like is Ding and He's idea about connectivity analysis.  Their
+approach assigns a connectivity coefficient between 0 (not at all likely to be
+in the same group) and 1 (very likely to be in the same group) to each pair of
+observations (_vertices_ in the network visualization). 
 
 The neat thing about this idea is that it lets us explore connected communities
-and how they evolve as we allow the connections to become weaker. The visualization
-below does just that.
+and how they evolve as we allow the connections to become weaker. The
+visualization below does just that.
 
 The visualization also plots networked communities using tools from network
 analysis instead of k-means, determined by an implementation of an algorithm
@@ -85,21 +84,32 @@ correlation, which itself is a kind of distance metric (for certain scaled
 problems, correlation is equivalent to a scaled Euclidean distance). It's not
 surprising then that vertices with very high connectivity coefficients tend to
 lie near the center of their respective k-means clusters, and you can see this
-in the example below.
+in the example below. This leavs open the idea of using a comparitavely cheap
+network community-detection algorithm as a starting point for k-means
+implementations.
 
-What I find fascinating about the last paragraph is that some cheap network
-community algorithms might produce excellent starting points for heuristic
-k-means implementations.
-
-I also love that, by explicitly illustrating connections between observations,
+I really love that, by explicitly illustrating connections between observations,
 the network visualization lets us see paths _between_ clusters. Sure, this is
 kind of analogous points in the scatter plot lying in-between two cluster
 centers, but it's easier to see in the network visualization.
+
+More usefully, if we don't have a good guess as to the number of clusters our
+data may contain, we can project into a higher-dimensional subspace (of
+dimension 10 or 20 or 100, say--still low compared to the data), and explore
+clusters that emerge as the connectivity coefficient is relaxed. This is easier
+to do with a network visualization than with k-means scatter plots because the
+network is always easy to look at in 3-d.
 
 And of course we can bring other powerful tools form network theory to the
 party like measures of centrality, communicability, and so on. Many of
 those ideas use the same computational machinery from this example.
 
+Finally, Ding and He show that these ideas work with kernel PCA, and later work
+explores alternative projections<sup>7</sup>, helping investigation of
+nonlinear relationships in the data. 
+
+There is a lot of fun here! This simple example just begins to scratch the
+surface.
 
 ## References
 
@@ -108,12 +118,14 @@ those ideas use the same computational machinery from this example.
 3. Blondel, Vincent D., et al. "Fast unfolding of communities in large networks." Journal of statistical mechanics: theory and experiment 2008.10 (2008): P10008.
 4. Csardi, Gabor, and Tamas Nepusz. "The igraph software package for complex network research." InterJournal, Complex Systems 1695.5 (2006): 1-9.
 5. Ding, Chris, and Xiaofeng He. "K-means clustering via principal component analysis." Proceedings of the twenty-first international conference on Machine learning. ACM, 2004.
-6. Halko, Nathan, Per-Gunnar Martinsson, and Joel A. Tropp. "Finding structure with randomness: Stochastic algorithms for constructing approximate matrix decompositions." (2009).
+6. Ding, Chris, Xiaofeng He, and Horst D. Simon. "On the equivalence of nonnegative matrix factorization and spectral clustering." Proceedings of the 2005 SIAM International Conference on Data Mining. Society for Industrial and Applied Mathematics, 2005.
+7. Halko, Nathan, Per-Gunnar Martinsson, and Joel A. Tropp. "Finding structure with randomness: Stochastic algorithms for constructing approximate matrix decompositions." (2009).
 
 ## The example
 
-Click on a vertex in the network visualization to identify it. Adjust the slider
-to change the network connectivity coefficent.
+Click on a vertex in the network visualization to identify it (and highlight
+its location in the scatter plot). Adjust the slider to change the network
+connectivity coefficent.
 
 ```{r}
 suppressMessages({
@@ -141,7 +153,7 @@ f = function(p)
   graph_from_adjacency_matrix(a, mode="undirected", diag=FALSE)
 }
 
-p = c(0.999, 0.995, 0.99, 0.97, 0.95, 0.925, 0.9, 0.85)
+p = c(0.9995, 0.999, 0.995, 0.99, 0.97, 0.95, 0.925, 0.9, 0.85)
 g = Map(f, p)
 
 # estimate network communities for each threshold value exclude communities
@@ -191,11 +203,11 @@ sd3 = SharedData$new(data.frame(x=s$u[,2], y=s$u[,3], color=paste(k-1)))
 
 # Map the sd group filter to the sd3 crosstalk group selection by way of cv.
 # Crazy, right?
-relay1 = crosstool(sd1, "transceiver", relay=sd3, width=0, init="0", lookup=cv, channel="filter->select")
+relay1 = crosstool(sd1, "transceiver", relay=sd3, height=0, init="0", lookup=cv, channel="filter->select")
 # Relay the slider values directly to the graph
-relay2 = crosstool(sd1, "transceiver", relay=sd2, width=0, channel="filter")
+relay2 = crosstool(sd1, "transceiver", relay=sd2, height=0, channel="filter")
 # Relay graph selections to the d3 scatter plot
-relay3 = crosstool(sd2, "transceiver", relay=sd3, width=0)
+relay3 = crosstool(sd2, "transceiver", relay=sd3, height=0)
 
 # d3 scatter plot
 d3 = d3scatter(sd3, ~x, ~y, color=~color, width="100%")
