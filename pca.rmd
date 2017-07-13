@@ -4,7 +4,7 @@ This example illustrates some nice ideas from a lovely short 2004 paper by
 Chris Ding and Xiaofeng He<sup>5</sup>. Their paper illuminates connections
 between k-means clustering and principal components analysis (PCA).
 
-Clarifying ealier results and introducing new ones, their paper shows in
+Clarifying earlier results and introducing new ones, their paper shows in
 particular that:
 
 - PCA can be viewed as continuous version of the discrete k-means classifier.
@@ -38,7 +38,7 @@ Genomic variant data is high-dimensional: Homo sapiens exhibits at least 81
 million identified genomic variants. The 1000 Genomes Project<sup>1</sup> has
 collected full genome sequences for more than 2,504 people. That is, if we
 simply record that zero means a person does not contain a particular variant,
-and a one means that a person does contain the variant (ignoring other
+and a one means that a person does contain the variant (ignoring may other
 details), then the 1000 Genomes Project variant data can be expressed as a
 2,504-row by more than 81 million-column sparse matrix of zeros and ones.
 That's high dimensional!
@@ -54,6 +54,11 @@ If we suspect the number of groups to be small--let's say 5, then Ding and He
 show that we can project the very large-dimensional 81-million column matrix
 into a much more manageable one with only 4 columns or so. As long as that
 projection is cheap, this makes things a lot easier!
+
+Examples found in https://github.com/bwlewis/1000_genomes_examples
+illustrate efficient computation of principal components for problems like
+this for a single chromosome, as well as for the whole genome. We use the
+IRLBA approach outlined there in the example below.
 
 ## Putting things together into an example
 
@@ -84,14 +89,14 @@ correlation, which itself is a kind of distance metric (for certain scaled
 problems, correlation is equivalent to a scaled Euclidean distance). It's not
 surprising then that vertices with very high connectivity coefficients tend to
 lie near the center of their respective k-means clusters, and you can see this
-in the example below. This leavs open the idea of using a comparitavely cheap
+in the example below. This leaves open the idea of using a comparatively cheap
 network community-detection algorithm as a starting point for k-means
 implementations.
 
-I really love that, by explicitly illustrating connections between observations,
-the network visualization lets us see paths _between_ clusters. Sure, this is
-kind of analogous points in the scatter plot lying in-between two cluster
-centers, but it's easier to see in the network visualization.
+By explicitly illustrating connections between observations, the network
+visualization lets us see paths _between_ clusters. Sure, this is kind of
+analogous points in the scatter plot lying in-between two cluster centers, but
+it's easier to see in the network visualization.
 
 More usefully, if we don't have a good guess as to the number of clusters our
 data may contain, we can project into a higher-dimensional subspace (of
@@ -109,7 +114,7 @@ explores alternative projections<sup>7</sup>, helping investigation of
 nonlinear relationships in the data. 
 
 There is a lot of fun here! This simple example just begins to scratch the
-surface.
+surface of these ideas.
 
 ## References
 
@@ -121,11 +126,23 @@ surface.
 6. Ding, Chris, Xiaofeng He, and Horst D. Simon. "On the equivalence of nonnegative matrix factorization and spectral clustering." Proceedings of the 2005 SIAM International Conference on Data Mining. Society for Industrial and Applied Mathematics, 2005.
 7. Halko, Nathan, Per-Gunnar Martinsson, and Joel A. Tropp. "Finding structure with randomness: Stochastic algorithms for constructing approximate matrix decompositions." (2009).
 
-## The example
+
+
+## Example
+
+The example below shows a network visualization where each vertex corresponds
+to a person. An edge between vertices appears if the between-vertex
+connectivity coefficient defined by Ding and He exceeds the specified threshold
+shown on the right. The vertices are colored as groups determined by the
+`cluster_louvain()` community detection algorithm in the igraph package.
+
+The scatter plot on the right shows a 2-d projection of the principal
+components analysis for the data, with group colors corresponding to the
+k-means clusters.
 
 Click on a vertex in the network visualization to identify it (and highlight
 its location in the scatter plot). Adjust the slider to change the network
-connectivity coefficent.
+connectivity coefficient.
 
 ```{r}
 suppressMessages({
@@ -134,6 +151,7 @@ library(crosstool)
 library(crosstalk)
 library(d3scatter)
 library(htmltools)})
+set.seed(1)
 s = readRDS(gzcon(url("http://illposed.net/chr22_pca.rds")))
 pop = readRDS(gzcon(url("http://illposed.net/pop.rds")))
 
@@ -174,7 +192,7 @@ member = function(x)
 m = Map(member, g)
 
 maxm = Reduce(max, Map(max, m))
-colors = c("#eeeeee", "#e31a1c", "#6a3d9a", "#33a02c", "#1f78b4", "#fdbf6f", "#ff7f00", "#b2df8a", "#fb9a99", "#a6cee3", "#cab2d6", "#ffff99", "#b15928")
+colors = c("#eeeeee", "#1f78b4", "#6a3d9a", "#fdbf6f", "#33a02c", "#e31a1c", "#ff7f00", "#b2df8a", "#fb9a99", "#a6cee3", "#cab2d6", "#ffff99", "#b15928")
 if(maxm > 1) colors = c(colors, rainbow(maxm - 1, alpha=NULL, start=0.2, end=0.5))
 # set the network vertex group colors
 for(j in 1:length(g)) V(g[[j]])$color = colors[m[[j]]]
@@ -235,9 +253,17 @@ bscols(vis, panel, widths=c(7, 5))
 
 ## Technical notes
 
+The example above primarily uses R's igraph, threejs, htmlwidgets, and
+crosstalk packages. Interactivity between plots and user-interface elements
+is handled by the crosstalk package (https://rstudio.github.io/crosstalk/).
+The experimental crosstool (https://bwlewis.github.io/crosstool) and
+d3scatter (https://github.com/jcheng5/d3scatter) packages are used to
+provide nonstandard inter-widget communication and a simple scatter plot,
+respectively.
+
 The threejs package responds to crosstalk selection handle events normally. But
 it uses the crosstalk filter handle in a non-standard way to control the graph
-animation sequence.  Use the slider in the visualization below to step through
+animation sequence.  Use the slider in the visualization above to step through
 the indicated levels of network connectivity thresholds.
 
 We connected threejs vertex selection to the scatter plot to highlight selected
