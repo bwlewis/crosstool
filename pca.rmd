@@ -191,9 +191,7 @@ member = function(x)
 }
 m = Map(member, g)
 
-maxm = Reduce(max, Map(max, m))
 colors = c("#eeeeee", "#1f78b4", "#6a3d9a", "#fdbf6f", "#33a02c", "#e31a1c", "#ff7f00", "#b2df8a", "#fb9a99", "#a6cee3", "#cab2d6", "#ffff99", "#b15928")
-if(maxm > 1) colors = c(colors, rainbow(maxm - 1, alpha=NULL, start=0.2, end=0.5))
 # set the network vertex group colors
 for(j in 1:length(g)) V(g[[j]])$color = colors[m[[j]]]
 # make a brief report of the groups
