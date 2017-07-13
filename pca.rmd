@@ -37,7 +37,7 @@ benefit substantially (including parallel implementations).
 Genomic variant data is high-dimensional: Homo sapiens exhibits at least 81
 million identified genomic variants. The 1000 Genomes Project<sup>1</sup> has
 collected full genome sequences for more than 2,504 people. That is, if we
-simply record that zero means an person does not contain a particular variant,
+simply record that zero means a person does not contain a particular variant,
 and a one means that a person does contain the variant (ignoring other
 details), then the 1000 Genomes Project variant data can be expressed as a
 2,504-row by more than 81 million-column sparse matrix of zeros and ones.
